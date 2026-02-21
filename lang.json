@@ -1,0 +1,19 @@
+{
+  "tutorial": {
+    "step1": { "title": "게임 족보 안내", "content": "ㅇㅅㅇ7-Hi: 족보가 없을 때 7을 보유하면 발동하며, 원페어를 제외한 모든 상위 족보를 이깁니다." },
+    "step2": { "title": "게임 목표", "content": "7라운드 동안 승리하여 가장 많은 점수를 획득하세요. DEAL을 눌러 시작합니다." },
+    "step3": { "title": "DEAL 안내", "content": "DEAL 버튼을 누르면 카드를 받습니다." },
+    "step5": { "title": "카드 확인", "content": "5장 중 상대에게 보여줄 4장을 선택하세요." },
+    "step6": { "title": "REVEAL 안내", "content": "4장을 선택하고 REVEAL을 누르세요." },
+    "step8": { "title": "승부 선택", "content": "승산이 있다면 SHOWDOWN, 불리하다면 FOLD를 누르세요." },
+    "step9": { "title": "SHOWDOWN 안내", "content": "SHOWDOWN 버튼을 눌러 결과를 확인하세요." },
+    "step11": { "title": "7-Hi 규칙", "content": "7-Hi는 원페어를 제외한 모든 상위 패를 이기는 강력한 수단입니다." },
+    "step12": { "title": "완료", "content": "기초 교육이 끝났습니다. 행운을 빕니다!" }
+  },
+  "gameMsg": {
+    "ready": "READY TO PLAY",
+    "selectReveal": "SELECT 4 CARDS TO REVEAL",
+    "chooseAction": "CHOOSE TO FOLD OR SHOWDOWN",
+    "allFolded": "ALL FOLDED"
+  }
+}

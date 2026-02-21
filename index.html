@@ -2,1065 +2,763 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Schrödinger Baseball - Single Mode</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <title>SEVEN HI</title>
+    <link rel="icon" type="image/png" href="7.png">
     <style>
-        :root { 
-            --bg: #050507; --cyan: #00f2ff; --purple: #bc13fe; --green: #00ff41; --red: #ff4b2b; 
-            --unit: 1vh; 
+        :root {
+            --neon-cyan: #0ff; --neon-green: #3f3; --neon-pink: #f0f;
+            --dark-bg: #050505; --card-bg: #fff;
+            --gold-gradient: linear-gradient(145deg, #ffd700, #ffae00, #bf953f, #fcf6ba, #b38728);
+            --red-gradient: linear-gradient(145deg, #ff0000, #cc0000, #990000);
         }
-        
-        html {
-            height: 100%;
-        }
-
         body { 
-            background: linear-gradient(rgba(5, 5, 7, 0.8), rgba(5, 5, 7, 0.8)), 
-                        url('cat footage.gif');
+            background: url('Casinotable.jpg') no-repeat center center fixed;
             background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            color: #fff; 
-            font-family: 'Segoe UI', sans-serif; 
-            display: flex; 
-            flex-direction: column; 
+            color: #eee; font-family: 'Pretendard', sans-serif; 
+            margin: 0; display: flex; justify-content: center; align-items: center; 
+            height: 100vh; width: 100vw; overflow: hidden; padding: 1vh; box-sizing: border-box;
+        }
+
+        #main-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('SEVEN HI.gif') no-repeat center center;
+            background-size: cover;
+            z-index: 1000; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; padding-top: 20vh;
+        }
+        .main-btn-group { display: flex; flex-direction: column; gap: 3vh; width: 40vw; max-width: 600px; }
+        
+        .btn-main {
+            padding: 4vh; font-weight: 900;
+            border: 0.4vh solid #bf953f; border-radius: 2vh; cursor: pointer;
+            text-shadow: 0.2vh 0.2vh 0.5vh rgba(0,0,0,0.8); transition: all 0.2s;
+            white-space: nowrap; overflow: hidden;
+            box-shadow: 0 0 2vh rgba(255, 0, 0, 0.4), inset 0 0 1.5vh rgba(255, 215, 0, 0.3);
+            color: #fff;
+        }
+        #btn-start { background: var(--red-gradient); font-size: 5vh; border-color: #ffd700; }
+        #btn-tutorial { background: var(--gold-gradient); color: #000; font-size: 4vh; border-color: #990000; }
+        .btn-main:hover { transform: scale(1.05); filter: brightness(1.2); }
+        
+        #side-container {
+            width: 25vw; max-width: 400px; margin-right: 2vh;
+            height: 80vh; display: flex; flex-direction: column;
+            margin-top: -2vh; 
+        }
+
+        .score-title {
+            font-size: 2.5vh; font-weight: 900; background: var(--gold-gradient);
+            color: #000; height: 6vh; display: flex; align-items: center; justify-content: center;
+            border-radius: 1vh; border: 0.3vh solid #5d4037; margin-bottom: 1.5vh;
+            text-transform: uppercase; letter-spacing: 0.2vh; box-shadow: 0 0 1.5vh rgba(255, 215, 0, 0.4);
+        }
+
+        #side-score { display: flex; flex-direction: column; gap: 1vh; flex-grow: 1; }
+
+        .score-player-unit {
+            flex: 1; display: flex; flex-direction: column; justify-content: center;
+            background: rgba(0,0,0,0.85); border: 0.25vh solid transparent; 
+            border-radius: 1.5vh; padding: 1vh 2vh; box-sizing: border-box;
+        }
+        .score-player-unit.my-score { border-color: #fff; box-shadow: 0 0 1vh rgba(255,255,255,0.3); }
+
+        .p-top-info { 
+            display: flex; justify-content: space-between; align-items: baseline;
+            border-bottom: 0.15vh solid rgba(0,255,255,0.3); margin-bottom: 0.5vh;
+        }
+        .p-name-label { font-size: 2vh; color: #fff; font-weight: bold; }
+        .p-total-label { font-size: 6vh; font-weight: 900; line-height: 1; }
+        .total-winner { color: #ff3333; text-shadow: 0 0 1.5vh rgba(255, 0, 0, 0.8); }
+        .total-normal { color: #fff; }
+
+        .p-mini-table { width: 100%; border-collapse: collapse; text-align: center; table-layout: fixed; }
+        .p-mini-table th { color: #fff; border: 0.1vh solid #555; padding: 0.2vh; font-size: 1.4vh; width: 14.28%; }
+        .p-mini-table td { color: #ffd700; border: 0.1vh solid #555; height: 3vh; font-weight: bold; font-size: 1.8vh; }
+
+        .game-board {
+            width: fit-content;
+            min-width: calc(fit-content * 1.05); 
+            max-width: 90vw; background: url('tablecloth.png'); background-size: cover;
+            padding: 2vh 3vh; border-radius: 3vh; border: 0.5vh solid #5d4037; position: relative;
+            height: 95vh; display: flex; flex-direction: column; justify-content: flex-start;
+            box-shadow: inset 0 0 5vh #000; box-sizing: border-box;
             align-items: center; 
-            justify-content: flex-start;
-            min-height: 100vh;
-            margin: 0; 
-            padding: 0;
-            user-select: none;
-            -webkit-user-select: none;
         }
 
-        #version-tag {
-            position: fixed;
-            bottom: 1.5vh;
-            left: 2vh;
-            color: #555;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.4vh;
-            letter-spacing: 0.1vh;
-            z-index: 500;
-        }
-        
-        #sound-control { position: fixed; right: 2vh; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 1vh; background: rgba(0,0,0,0.7); padding: 1.5vh 1vh; border-radius: 3vh; border: 0.1vh solid var(--cyan); z-index: 10000; }
-        #sound-control input[type=range] { -webkit-appearance: slider-vertical; width: 0.8vh; height: 15vh; cursor: pointer; }
-        .sound-icon { font-size: 1.5vh; color: var(--cyan); }
-
-        .title-wrapper { position: relative; margin-top: 5vh; margin-bottom: 3vh; z-index: 300; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
-        .title-bg { position: absolute; background: rgba(0, 0, 0, 0.7); width: 120%; height: 120%; border-radius: 1.5vh; filter: blur(0.5vh); z-index: -1; }
-        .header-title { font-size: 5vh; font-weight: bold; letter-spacing: 1.2vh; text-shadow: 0 0 2vh currentColor; animation: neonShift 10s infinite alternate linear; text-align: center; margin: 0; padding: 1vh 4vh; }
-        
-        @keyframes neonShift { 0% { color: var(--cyan); border-color: var(--cyan); box-shadow: 0 0 2vh var(--cyan); } 100% { color: var(--purple); border-color: var(--purple); box-shadow: 0 0 2vh var(--purple); } }
-        @keyframes neonShiftBg { 0% { background-color: var(--cyan); box-shadow: 0 0 1.5vh var(--cyan); } 100% { background-color: var(--purple); box-shadow: 0 0 1.5vh var(--purple); } }
-
-        @keyframes keyholeNeonShift { 
-            0% { filter: drop-shadow(0 0 1.5vh var(--cyan)) drop-shadow(0 0 3vh var(--cyan)); } 
-            100% { filter: drop-shadow(0 0 1.5vh var(--purple)) drop-shadow(0 0 3vh var(--purple)); } 
+        .static-gold-box { 
+            font-size: 3vh; font-weight: 900; background: var(--gold-gradient);
+            color: #000; height: 6vh; width: 100%; display: flex; align-items: center; justify-content: center;
+            border-radius: 1vh; text-align: center;
+            box-shadow: 0 0 2vh rgba(255, 215, 0, 0.6); border: 0.3vh solid #5d4037;
+            text-transform: uppercase; letter-spacing: 0.3vh; margin-bottom: 1vh;
+            box-sizing: border-box;
         }
 
-        .game-container { 
-            display: flex; 
-            flex-direction: column;
-            align-items: center;
-            justify-content: center; 
-            width: 95%; 
-            height: auto; 
-            padding-bottom: 5vh;
-        }
-        
-        #setup { width: 50vh; height: auto; padding: 4vh; border-radius: 2.5vh; background: rgba(10, 10, 15, 0.95); border: 0.4vh solid var(--cyan); z-index: 200; text-align: center; box-sizing: border-box; box-shadow: 0 0 3vh rgba(0, 242, 255, 0.3); display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 1vh; }
-        
-        .setup-box-container { position: relative; width: 35vh; margin-bottom: 2vh; }
-        .setup-cat { width: 35vh; height: 35vh; border-radius: 4vh; border: 0.4vh solid var(--green); object-fit: cover; animation: neonShift 10s infinite alternate linear; display: block; }
-        
-        .setup-btn { font-family: 'Bebas Neue', cursive; width: 35vh; color: #000; font-weight: 900; height: 7vh; font-size: 3.2vh; border-radius: 1.5vh; cursor: pointer; border: none; animation: neonShiftBg 10s infinite alternate linear; margin-top: 1vh; transition: transform 0.1s, filter 0.2s; letter-spacing: 0.1vh; }
-        .setup-btn:hover { transform: scale(1.02); filter: brightness(1.2); }
-        .setup-btn:active { transform: scale(0.98); }
+        #round-info { font-size: 2.5vh; color: #fff; text-shadow: 0 0 1vh var(--neon-cyan); font-weight: 900; text-align: center; margin-bottom: 1.5vh; }
 
-        .tutorial-btn { font-family: 'Bebas Neue', cursive; width: 35vh; background: #444; color: #fff; font-weight: 700; height: 5vh; font-size: 2.5vh; border-radius: 1.5vh; cursor: pointer; border: 0.2vh solid #666; margin-bottom: 1vh; transition: 0.2s; letter-spacing: 0.1vh; }
-        .tutorial-btn:hover { background: #555; transform: scale(1.02); }
-        .tutorial-btn:active { transform: scale(0.98); }
-
-        .new-keyhole { width: 35vh; height: auto; margin-top: 1.5vh; animation: keyholeNeonShift 10s infinite alternate linear; }
-
-        #game-box, #info-panel { width: 50vh; height: 75vh; padding: 2.5vh; border-radius: 2.5vh; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; margin-bottom: 3vh; }
-        #game-box { background: rgba(17, 17, 17, 0.9); border: 0.1vh solid #333; position: relative; display: none; }
-        #info-panel { background: rgba(10, 10, 15, 0.9); border: 0.1vh solid #333; display: none; position: relative; }
-        
-        .status { text-align:center; margin-bottom:1.5vh; font-weight:bold; height:3vh; font-size: 2.2vh; animation: neonShift 10s infinite alternate linear; transform: translateY(-1vh); }
-        #log-window { height: 26vh; background: #000; overflow-y: auto; padding: 1vh; font-family: 'Consolas', monospace; margin-bottom: 1.5vh; border: 0.1vh inset #222; display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: 8.5vh; gap: 0px; align-content: start; }
-        .log-item { padding: 0.5vh; display: flex; flex-direction: column; justify-content: center; background: rgba(0, 242, 255, 0.05); color: var(--cyan); border-bottom: 0.1vh solid #222; position: relative; box-sizing: border-box; text-align: center; }
-        .log-item:nth-child(odd) { border-right: 0.1vh solid #333; }
-        .log-n { font-family: 'Orbitron', sans-serif; font-size: 3vh; font-weight: 900; display: block; letter-spacing: 0.2vh; color: #fff; }
-        .log-sb { font-weight: bold; font-size: 1.8vh; color: var(--purple); margin-top: 0.2vh; }
-        .log-out { color: #bc13fe; text-shadow: 0 0 1vh #bc13fe; }
-
-        .chance-area { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2.5vh; gap: 2vh; height: 16vh; position: relative; }
-        #chance-box { background: rgba(0,0,0,0.6); padding: 1vh; border-radius: 2vh; border: 0.2vh solid var(--purple); text-align: center; flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: center; box-sizing: border-box; transition: border-color 0.5s; z-index: 5; }
-        .chance-title { font-family: 'Bebas Neue', cursive; font-size: 2.4vh; font-weight: bold; display: block; margin-bottom: 0.5vh; transition: color 0.5s, text-shadow 0.5s; }
-        .chance-value { font-size: 5.85vh; font-weight: 900; color: var(--purple); text-shadow: 0 0 2.5vh var(--purple); font-family: 'Orbitron', sans-serif; line-height: 1.1; }
-        
-        .poison-text { 
-            font-size: 2.8vh; letter-spacing: -0.1vh; line-height: 1.1; font-weight: 900; 
-            display: inline-block;
-            animation: floatingText 3s infinite ease-in-out;
-        } 
-        @keyframes floatingText {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-0.8vh); }
+        .game-msg { 
+            font-size: 2.2vh; font-weight: 900; color: #ffd700;
+            background: rgba(0,0,0,0.8); width: 100%; text-align: center;
+            padding: 1.5vh 0; border-radius: 0.8vh; margin-bottom: 1.5vh;
+            border-top: 0.3vh solid #bf953f; border-bottom: 0.3vh solid #bf953f;
+            box-sizing: border-box; text-shadow: 0 0 0.8vh rgba(255,215,0,0.5);
         }
 
-        .prob-cat-container { position: relative; width: 16vh; height: 16vh; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-        .prob-cat { width: 100%; height: 100%; border-radius: 2.5vh; border: 0.2vh solid var(--purple); object-fit: cover; box-sizing: border-box; z-index: 1; }
-        #turn-counter { position: absolute; font-weight: 900; font-size: 8vh; z-index: 20; pointer-events: none; transition: transform 2s ease-in-out, color 0.5s; will-change: transform; }
+        .player-zone {
+            flex: 1; background: rgba(255,255,255,0.05);
+            padding: 0 2.5vh; border-radius: 2vh; display: flex; align-items: center; gap: 2vh;
+            border: 0.2vh solid rgba(255,255,255,0.1); box-sizing: border-box; margin-bottom: 1.2vh;
+            width: fit-content;
+        }
+        #zone-human { border-color: #fff !important; box-shadow: 0 0 2vh rgba(255,255,255,0.2); }
 
-        #candidates-box { flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; position: relative; }
-        .cand-title { font-family: 'Bebas Neue', cursive; font-size: 3vh; color:#fff; margin-bottom: 1.5vh; font-weight:bold; text-align: center; padding: 1vh 0; border-top: 0.1vh solid #333; border-bottom: 0.1vh solid #333; }
-        #cand-list { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1vh; overflow-y: hidden; overflow-x: hidden; font-family: 'Consolas', monospace; font-size: 1.8vh; color: #fff; flex-grow: 1; align-content: start; }
-        .cand-item { padding: 0.4vh 0.2vh; height: 3vh; line-height: 3vh; text-align: center; background: rgba(255,255,255,0.07); border-radius: 0.6vh; transition: none; will-change: transform; }
+        .p-meta { width: 18vh; flex-shrink: 0; text-align: center; }
+        .p-result { font-size: 2.2vh; font-weight: 900; height: 1.2em; transition: color 0.3s; }
+        .p-fold-rank { font-size: 1.4vh; color: #888; margin-top: 0.3vh; }
 
-        #paradox-cat-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: 100;
-            display: none;
+        .txt-win { color: #ff3333; text-shadow: 0 0 1vh rgba(255, 0, 0, 0.7); }   
+        .txt-lose { color: #000000; text-shadow: 0 0 0.5vh #fff; } 
+        .txt-fold { color: #888888; }   
+
+        .cards-row { display: flex; gap: 1.5vh; flex-grow: 1; height: 100%; align-items: center; width: fit-content; }
+        .footer-ui { margin-top: auto; display: flex; flex-direction: column; align-items: center; width: 100%; }
+        
+        .action-btn-group { display: flex; gap: 2vh; justify-content: center; width: 100%; }
+        .action-btn-group button {
+            width: 18vh; height: 7vh;
+            background: #27ae60; color: white; border: none;
+            font-size: 2.2vh; font-weight: bold; cursor: pointer; border-radius: 1.2vh;
+            transition: transform 0.1s; display: flex; align-items: center; justify-content: center;
+        }
+        .action-btn-group button:active { transform: scale(0.95); }
+        .action-btn-group button.fold-btn { background: #c0392b; }
+        .action-btn-group button:disabled { background: #7f8c8d; cursor: not-allowed; transform: none; }
+
+        .card, .mini-card {
+            height: 100%; 
+            aspect-ratio: 5/7;
+            background: var(--card-bg); color: #000; border-radius: 1vh;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            font-weight: bold; 
+            border: 0.1vh solid #ccc; 
+            border-right: 0.6vh solid #000; border-bottom: 0.6vh solid #000;
+            transition: all 0.3s;
+            cursor: pointer; user-select: none; flex-shrink: 0;
+            width: auto;
+            box-sizing: border-box;
+        }
+
+        .human-deal-anim {
+            animation: dealFromDeck 0.52s cubic-bezier(0.25, 1, 0.5, 1) forwards;
             opacity: 0;
-            border-radius: 1vh;
         }
 
-        @keyframes fadeOutLong {
-            0% { opacity: 1; }
-            50% { opacity: 1; }
-            100% { opacity: 0; }
+        @keyframes dealFromDeck {
+            0% { transform: translate(60vw, -20vh) rotate(45deg); opacity: 0; }
+            100% { transform: translate(0, 0) rotate(0); opacity: 1; }
         }
 
-        .input-view { 
-            background: #000; font-family: 'Orbitron', sans-serif; font-size: 4.5vh; text-align: center; height: 9vh; 
-            line-height: 9vh; border-radius: 1.2vh; margin-bottom: 2vh; color: #fff; border: 0.1vh inset #222; 
-            letter-spacing: 1.5vh; font-weight: 900; text-shadow: 0 0 1vh var(--cyan);
+        .card.hidden { 
+            background: #2c3e50 !important;
+            background-image: repeating-conic-gradient(#34495e 0% 25%, #2c3e50 0% 50%) !important;
+            background-size: 2vh 2vh !important;
+            border: 0.3vh solid #1a252f; color: transparent !important;
+            border-right: 0.6vh solid #000; border-bottom: 0.6vh solid #000;
+            box-shadow: inset 0 0 1.5vh rgba(0,0,0,0.5);
         }
-
-        .keypad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1vh; flex-grow: 1; }
-        .key-btn, #zero-btn, #obs-btn, #clr-btn, #ent-btn { height: 100%; min-height: 5vh; }
-        button { background: #222; border: none; color: #fff; padding: 1vh 0; border-radius: 1vh; cursor: pointer; font-size: 2.4vh; box-shadow: 0.2vh 0.2vh 0.5vh rgba(0,0,0,0.5); transition: background 0.2s, transform 0.1s, filter 0.2s; }
-        button:hover:not(:disabled) { filter: brightness(1.3); transform: translateY(-0.2vh); }
-        button:active:not(:disabled), button.active { transform: translateY(0.2vh); filter: brightness(0.8); }
-        button:disabled { opacity: 0.1; cursor: not-allowed; }
         
-        .btn-clr { font-family: 'Bebas Neue', cursive; background: var(--cyan) !important; color: #000 !important; font-weight: bold; border: 0.2vh solid rgba(255,255,255,0.4); box-shadow: inset 0 0 1vh rgba(255,255,255,0.5), 0 0 1.5vh var(--cyan); font-size: 2.5vh !important; }
-        .btn-obs { font-family: 'Bebas Neue', cursive; background: var(--purple); color: #000; font-weight: bold; border: 0.2vh solid rgba(255,255,255,0.2); box-shadow: inset 0 0 1.5vh rgba(0,0,0,0.5), 0 0 1.5vh var(--purple); font-size: 2.5vh !important; }
-        .btn-ent { font-family: 'Bebas Neue', cursive; background: var(--green); color: #000; font-weight: bold; grid-row: span 2; border: 0.2vh solid rgba(0,0,0,0.2); box-shadow: inset 0 0 1.5vh rgba(255,255,255,0.3), 0 0 1.5vh var(--green); font-size: 2.5vh !important; }
+        .mini-card { height: 11vh; width: calc(11vh * (5/7)); }
+        .mini-card.empty { background: rgba(255,255,255,0.1); border: 0.2vh dashed #444; color: transparent; }
+        .mini-card.locked { background: #555 !important; border: 0.2vh solid #333; border-right: 0.6vh solid #000; border-bottom: 0.6vh solid #000; color: transparent !important; }
         
-        .overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.96); flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
-        #quantum-field { position: absolute; width: 100%; height: 100%; top: 0; left: 0; overflow: hidden; pointer-events: none; z-index: 1001; }
-        .bg-candidate { position: absolute; font-family: 'Courier New', monospace; font-size: 6.5vh; font-weight: bold; text-shadow: 0 0 1.5vh currentColor; animation: blinkSync 4s infinite ease-in-out; opacity: 0; }
+        .card.folded-filter { opacity: 0.3; filter: grayscale(0.8); }
+        .card.red, .mini-card.red { color: #d63031; }
+        .card.black, .mini-card.black { color: #2d3436; }
+        .card.special, .mini-card.special { background: #ffeaa7; border-color: #f39c12; }
+        .card.selected { border-color: var(--neon-green); transform: translateY(-1.5vh); }
+        .card.revealed-border { border-color: var(--neon-cyan); }
         
-        @keyframes blinkSync { 0%, 100% { opacity: 0; transform: scale(0.9); } 50% { opacity: 0.7; transform: scale(1.1); } }
-
-        .panel-center { 
-            position: relative; 
-            z-index: 1010; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            text-align: center; 
-            background: #0a0a0c; 
-            padding: 5vh; 
-            border-radius: 4vh; 
-            border: 0.2vh solid var(--purple); 
-            width: 60vh; 
-            box-shadow: 0 0 10vh rgba(0, 0, 0, 1);
-        }
-
-        #setup-footer { margin-top: 0.5vh; font-size: 1.3vh; color: #888; text-align: center; z-index: 300; line-height: 1.6; flex-shrink: 0; }
-
         #tutorial-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); z-index: 5000; flex-direction: column; align-items: center; justify-content: center;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.6); z-index: 5000; flex-direction: column; 
+            align-items: center; justify-content: center; pointer-events: auto;
         }
         .tutorial-msg-box {
-            background: #1a1a1a; border: 0.3vh solid #666; padding: 2vh 3vh; border-radius: 2vh;
-            width: 60vh; height: auto; min-height: 10vh; text-align: center; box-shadow: 0 0 2vh rgba(0,0,0,0.8); position: relative;
+            background: #1a1a1a; border: 0.3vh solid #666; padding: 2vh 3vh; 
+            border-radius: 2vh; width: 70vh; text-align: center; 
+            box-shadow: 0 0 2vh rgba(0,0,0,0.8); position: relative; pointer-events: auto;
         }
-        .tutorial-msg-box h3 { color: #ccc; font-size: 2.5vh; margin-top: 0; margin-bottom: 0; }
-        .tutorial-msg-box p { font-size: 1.8vh; color: #ddd; line-height: 1.6; margin: 0.2vh 0 0.75vh 0; }
-        .tutorial-msg-box .esc-guide { font-size: 1.2vh; color: #888; margin-top: 1.5vh; }
-        .tutorial-msg-box button { background: #444; color: #fff; padding: 1vh 3vh; border: 0.1vh solid #666; border-radius: 1vh; font-weight: bold; cursor: pointer; }
-        .tutorial-msg-box button:hover { background: #555; }
-        
-        .tutorial-msg-box button.btn-cyan { background: var(--cyan); color: #000; border: none; box-shadow: 0 0 1.5vh var(--cyan); }
-        .tutorial-msg-box button.btn-cyan:hover { background: #00d8e4; }
-
         .tutorial-highlight { 
-            outline: 0.5vh solid var(--red) !important; 
-            box-shadow: 0 0 3vh var(--red) !important;
+            outline: 0.5vh solid #ff4b2b !important; 
+            box-shadow: 0 0 5vh #ff4b2b !important;
             opacity: 1 !important;
             pointer-events: auto !important;
-        }
-        .tutorial-highlight-turn { 
-            outline: 0.5vh solid var(--red) !important; 
-            box-shadow: 0 0 3vh var(--red) !important;
-            opacity: 1 !important;
-            pointer-events: auto !important;
-            transform: scaleY(0.85);
-        }
-        .tutorial-dim { opacity: 0.2 !important; pointer-events: none !important; }
-
-        #credit-overlay { 
-            display: none; position: fixed; top:0; left:0; width:100%; height:100%; 
-            background: rgba(0,0,0,0.95); z-index: 15000; flex-direction: row; align-items: center; justify-content: center; overflow: hidden;
-        }
-        .side-cat-box {
-            flex: 1; display: flex; align-items: center; justify-content: center; padding: 2vh; height: 100%; z-index: 16000; pointer-events: none;
-        }
-        .side-cat-img { 
-            width: 35vh; height: 35vh; border-radius: 4vh; border: 0.6vh solid #fff; object-fit: cover; 
-            opacity: 1; box-shadow: 0 1vh 3vh rgba(0,0,0,0.8), 0 0 2vh rgba(255,255,255,0.3);
-            transform: translateZ(50px);
-            animation: floatingCat 4s infinite ease-in-out;
-            cursor: pointer;
-            pointer-events: auto;
-        }
-        
-        @keyframes floatingCat {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-3vh) rotate(2deg); }
-        }
-        
-        #credit-container {
+            z-index: 6000 !important;
             position: relative;
-            width: 50%; 
-            height: 100%;
-            border-left: 0.2vh solid rgba(255,255,255,0.3);
-            border-right: 0.2vh solid rgba(255,255,255,0.3);
-            background: rgba(0,0,0,0.98);
-            display: flex;
+        }
+        .tutorial-active-lock { pointer-events: none !important; }
+        .tutorial-active-lock #tutorial-overlay, 
+        .tutorial-active-lock #tutorial-overlay *, 
+        .tutorial-active-lock .tutorial-highlight { pointer-events: auto !important; }
+
+        .card .suit, .mini-card .suit { font-size: 2.8vh; line-height: 1; }
+        .card .val, .mini-card .val { font-size: 3.5vh; font-weight: 900; line-height: 1; }
+        .push-right { margin-left: auto; }
+
+        #game-over-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 2000; display: none;
+            flex-direction: column; justify-content: center; align-items: center;
+        }
+        .final-board {
+            background: rgba(30,30,30,0.9); border: 0.6vh solid #bf953f; border-radius: 4vh;
+            padding: 5vh; width: 80vh; text-align: center; box-shadow: 0 0 6vh rgba(255, 215, 0, 0.3);
+        }
+        .final-winner { font-size: 6vh; font-weight: 900; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4vh; }
+
+        #deck-info {
+            width: 15vh; margin-left: 2vh; background: rgba(0,0,0,0.7);
+            border: 0.2vh solid #444; padding: 1.5vh; border-radius: 1.5vh; text-align: center;
+            height: 70vh; display: flex; flex-direction: column; opacity: 0.8; box-sizing: border-box;
+            align-self: center; justify-content: center;
+        }
+        .remaining-container { 
+            display: flex; flex-direction: column; gap: 0.8vh; align-items: center; 
+            margin-top: 1.5vh; overflow-y: auto; flex-grow: 1; width: 100%;
             justify-content: center;
-            overflow: hidden;
-            pointer-events: auto;
-            z-index: 15002;
-        }
-        #credit-content {
-            position: absolute; top: 100%; width: 90%; text-align: center; color: #ddd;
-            font-size: 2.1vh; line-height: 2.2; white-space: pre-wrap; padding: 10vh 0;
-            transition: none;
-            pointer-events: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .credit-logo { width: 20.25vh; height: auto; margin-top: 3vh; filter: brightness(0) invert(1); opacity: 0.8; }
-        .credit-esc { position: fixed; bottom: 3vh; right: 3vh; color: #666; font-size: 1.5vh; z-index: 15003; }
-
-        #flash-overlay { 
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 99999; opacity: 0; background: #000;
-        }
-        #dead-x { 
-            display: none; position: absolute; top: 62%; left: 50%; transform: translate(-50%, -50%); 
-            font-size: 30vh; color: var(--green); text-shadow: 0 0 4vh var(--green), 0 0 8vh var(--green); 
-            font-weight: 900; opacity: 0.8; z-index: 150; pointer-events: none; 
         }
 
-        .emoji-lane {
-            position: fixed; white-space: nowrap; font-size: 5vh; pointer-events: none; z-index: 5; opacity: 0.6;
+        #sound-controls {
+            position: fixed; bottom: 3vh; right: 3vh; z-index: 3000;
+            display: flex; flex-direction: column; align-items: flex-end; gap: 1.5vh;
         }
-        @keyframes slide-h { from { transform: translateX(-150%); } to { transform: translateX(150vw); } }
-        @keyframes slide-v { from { transform: translateY(150vh); } to { transform: translateY(-150%); } }
-
-        @media screen and (max-width: 768px) {
-            #setup { width: 90vw; }
-            #game-box, #info-panel { 
-                width: 90vw; 
-                height: auto; 
-                min-height: 80vh; 
-                flex-shrink: 0;
-            }
-            .setup-cat, .setup-btn, .tutorial-btn, .setup-box-container { width: 80vw; }
-            .header-title { font-size: 4vh; letter-spacing: 0.5vh; }
-            .panel-center { width: 90vw; padding: 3vh; }
-            
-            .game-container > div[style*="flex-wrap: wrap"] {
-                flex-direction: column !important;
-                align-items: center !important;
-            }
+        #sound-panel {
+            background: rgba(0,0,0,0.9); border: 0.3vh solid #bf953f; border-radius: 2vh;
+            padding: 2vh; display: none; flex-direction: column; gap: 1.5vh; min-width: 16vh;
         }
+        .sound-row { display: flex; flex-direction: column; gap: 0.8vh; }
+        .sound-row label { font-size: 1.6vh; color: #ffd700; font-weight: bold; }
+        .sound-row input { cursor: pointer; accent-color: #ffd700; width: 100%; height: 1vh; }
+        #btn-sound-toggle {
+            width: 6vh; height: 6vh; border-radius: 50%; background: var(--gold-gradient);
+            border: 0.3vh solid #5d4037; cursor: pointer; font-size: 3vh; display: flex;
+            align-items: center; justify-content: center; box-shadow: 0 0 1.5vh rgba(255,215,0,0.5);
+        }
+        .tut-table { width: 100%; border-collapse: collapse; margin-bottom: 1vh; font-size: 1.5vh; color: #ccc; }
+        .tut-table th, .tut-table td { border: 1px solid #444; padding: 0.5vh; text-align: center; }
+        .tut-table th { background: #333; color: #ffd700; }
+        .tut-row-highlight { background: rgba(255, 215, 0, 0.1); font-weight: bold; color: #ffd700 !important; }
     </style>
 </head>
-<body oncontextmenu="return false" oncopy="return false" oncut="return false">
+<body class="idle">
 
-<div id="version-tag">1.3 Version</div>
-<div id="flash-overlay"></div>
-
-<div id="sound-control">
-    <span class="sound-icon">♪</span>
-    <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.15" oninput="_0x3f2a(this.value)">
-    <span class="sound-icon" style="font-size:1vh;">VOL</span>
-</div>
-
-<div id="credit-overlay">
-    <div class="side-cat-box"><img src="귀여운고양이도트2.jpg" class="side-cat-img" onclick="_0xplayNyaBgm()"></div>
-    <div id="credit-container" onmousedown="_0x8c21(event)" onmouseup="_0x7d4e(event)">
-        <div id="credit-content"></div>
-    </div>
-    <div class="side-cat-box"><img src="귀여운고양이도트3.jpg" class="side-cat-img" style="animation-delay: -2s;" onclick="_0xplayNyaBgm()"></div>
-    <div class="credit-esc">Press ESC to Close</div>
-</div>
-
-<div id="tutorial-overlay">
-    <div class="tutorial-msg-box">
-        <h3 id="tut-title">튜토리얼</h3>
-        <p id="tut-desc">내용</p>
-        <button id="tut-next-btn" onclick="_0x5a1b()">확인</button>
-        <div id="tut-esc-guide" class="esc-guide">ESC를 누르면 언제든지 메인화면으로 돌아갑니다.</div>
-    </div>
-</div>
-
-<div class="title-wrapper">
-    <div class="title-bg"></div>
-    <div class="header-title">SCHRÖDINGER BASEBALL</div>
-</div>
-
-<div class="game-container">
-    <div id="setup">
-        <div class="setup-box-container">
-            <img src="Neon cat.gif" class="setup-cat">
+    <div id="main-screen">
+        <div class="main-btn-group">
+            <button id="btn-start" class="btn-main" onclick="playDelt4(); gm.startGame()">START</button>
+            <button id="btn-tutorial" class="btn-main" onclick="playDelt4(); _0x1d2e()">TUTORIAL</button>
         </div>
-        <button onclick="_0x1d2e()" class="tutorial-btn">How to Play</button>
-        <button onclick="_0x4c5b()" class="setup-btn">Start Single Mode</button>
-        <img src="Aview.png" class="new-keyhole">
-    </div>
-    <div id="setup-footer">
-        이 게임은 제미나이와 그록을 이용하여 제작되었습니다.<br>
-        저작권은 나한테 있나? 잘 모르겠습니다. 그냥 가볍게 즐겨주세요.
     </div>
 
-    <div style="display: flex; flex-wrap: wrap; gap: 3vh; justify-content: center; width: 100%;">
-        <div id="game-box">
-            <div class="status" id="status">준비 완료</div>
-            <div id="log-window"></div>
-            <div class="input-view" id="display">---</div>
-            <div class="keypad" id="main-keypad">
-                <button class="key-btn" data-key="7" onclick="_0x9b8a('7')">7</button><button class="key-btn" data-key="8" onclick="_0x9b8a('8')">8</button><button class="key-btn" data-key="9" onclick="_0x9b8a('9')">9</button>
-                <button id="obs-btn" class="btn-obs" onclick="_0x2f1e()">OBS</button>
-                <button class="key-btn" data-key="4" onclick="_0x9b8a('4')">4</button><button class="key-btn" data-key="5" onclick="_0x9b8a('5')">5</button><button class="key-btn" data-key="6" onclick="_0x9b8a('6')">6</button>
-                <button id="clr-btn" class="btn-clr" onclick="_0x7c3d('CLR')">CLR</button>
-                <button class="key-btn" data-key="1" onclick="_0x9b8a('1')">1</button><button class="key-btn" data-key="2" onclick="_0x9b8a('2')">2</button><button class="key-btn" data-key="3" onclick="_0x9b8a('3')">3</button>
-                <button id="ent-btn" class="btn-ent" onclick="_0x7c3d('ENT')">ENT</button>
-                <button id="zero-btn" data-key="0" style="grid-column: span 3" onclick="_0x9b8a('0')">0</button>
+    <div id="tutorial-overlay">
+        <div class="tutorial-msg-box">
+            <h3 id="tut-title" style="color: #ccc; font-size: 2.8vh; margin-bottom: 1.5vh;"></h3>
+            <div id="tut-content-area">
+                <p id="tut-desc" style="font-size: 2vh; color: #ddd; line-height: 1.6; margin-bottom: 2vh;"></p>
             </div>
+            <button id="tut-next-btn" onclick="_0x5a1b()" style="background: #444; color: #fff; padding: 1vh 4vh; border: 0.1vh solid #666; border-radius: 1vh; font-size: 1.8vh; font-weight: bold; cursor: pointer;">확인</button>
+            <div id="tut-esc-guide" class="esc-guide" style="font-size: 1.4vh; color: #888; margin-top: 2vh;">ESC를 누르면 언제든지 메인화면으로 돌아갑니다.</div>
         </div>
+    </div>
 
-        <div id="info-panel">
-            <div id="dead-x">X</div>
-            <div class="chance-area" id="chance-area">
-                <div id="chance-box">
-                    <span id="chance-title" class="chance-title">Measuring Energy Level</span>
-                    <div id="chance-val" class="chance-value">--.--%</div>
-                </div>
-                <div class="prob-cat-container">
-                    <div id="turn-counter">8</div>
-                    <img id="prob-cat-img" src="Neon cat.gif" class="prob-cat">
-                </div>
-            </div>
-            <div id="candidates-box">
-                <div class="cand-title">Quantum Cloud</div>
-                <div id="cand-list"></div>
-                <img id="paradox-cat-overlay" src="cat footage3.jpg">
+    <div id="game-over-overlay">
+        <div class="final-board">
+            <div id="final-winner-text" class="final-winner">WINNER: YOU</div>
+            <div id="final-score-container"></div>
+            <div style="display: flex; gap: 3vh; justify-content: center; margin-top: 4vh;">
+                <button onclick="location.reload()" style="background:#444; color:#fff; width: 25vh; height: 7vh; font-size: 2.5vh; font-weight: bold; border-radius: 2vh; cursor: pointer; border: 0.3vh solid #666; display: flex; align-items: center; justify-content: center;">Main Menu</button>
+                <button id="btn-restart" onclick="playDelt4(); gm.resetForNewGame()" style="background:var(--gold-gradient); color:#000; width: 25vh; height: 7vh; font-size: 2.5vh; font-weight: bold; border-radius: 2vh; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center;">Restart</button>
             </div>
         </div>
     </div>
-</div>
 
-<div id="obs-overlay" class="overlay">
-    <div id="quantum-field"></div>
-    <div id="obs-input-container" class="panel-center">
-        <h2 style="font-family: 'Bebas Neue', cursive; color:var(--purple); font-size:7vh; margin-bottom:0; letter-spacing:0.5vh;">Observation</h2>
-        <p style="color:var(--purple); font-size:2vh;"><b>양자고양이의 좌표를 관측하세요!</b></p>
-        <input type="tel" id="obs-num" maxlength="3" autocomplete="off"
-               oninput="this.value = this.value.replace(/[^0-9]/g, '');"
-               style="background:#000; color:#fff; font-family: 'Orbitron', sans-serif; font-size: 5vh; text-align:center; width:35vh; margin:4vh 0; border:0.3vh solid var(--purple); border-radius:1.5vh; letter-spacing:1.5vh; text-shadow: 0 0 1vh var(--purple);">
-        <button onclick="_0x6f5a()" style="padding:1.5vh 8vh; background:var(--purple); color:#fff; font-weight:bold; font-size:4vh; border-radius:1.5vh; letter-spacing:0.2vh;">관측 실행</button>
+    <div id="sound-controls">
+        <div id="sound-panel">
+            <div class="sound-row">
+                <label>BGM</label>
+                <input type="range" min="0" max="1" step="0.01" value="0.06" id="vol-bgm" oninput="updateMasterVol('bgm', this.value)">
+            </div>
+            <div class="sound-row">
+                <label>SFX</label>
+                <input type="range" min="0" max="1" step="0.01" value="0.4" id="vol-sfx" oninput="updateMasterVol('sfx', this.value)">
+            </div>
+        </div>
+        <button id="btn-sound-toggle" onclick="toggleSoundPanel()">⚙️</button>
     </div>
-</div>
+
+    <audio id="bgm" src="casinojazz.mp3" loop></audio>
+    <audio id="sfx-click" src="delt1.mp3"></audio>
+    <audio id="sfx-btn" src="Click.mp3"></audio>
+    <audio id="sfx-delt4" src="delt4.mp3"></audio>
+
+    <div id="side-container">
+        <div class="score-title">SCORE BOARD</div>
+        <div id="side-score"></div>
+    </div>
+
+    <div class="game-board">
+        <div class="static-gold-box">WELCOME TO SEVEN Hi</div>
+        <div id="round-info">ROUND 1 / 7</div>
+        
+        <div class="player-zone" id="zone-ai1"><div class="p-meta"><div class="p-result" id="res-ai1"></div><div id="fold-rank-ai1" class="p-fold-rank"></div></div><div id="cards-ai1" class="cards-row"></div></div>
+        <div class="player-zone" id="zone-ai2"><div class="p-meta"><div class="p-result" id="res-ai2"></div><div id="fold-rank-ai2" class="p-fold-rank"></div></div><div id="cards-ai2" class="cards-row"></div></div>
+        <div class="player-zone" id="zone-ai3"><div class="p-meta"><div class="p-result" id="res-ai3"></div><div id="fold-rank-ai3" class="p-fold-rank"></div></div><div id="cards-ai3" class="cards-row"></div></div>
+        <div class="player-zone" id="zone-human"><div class="p-meta"><div class="p-result" id="res-human"></div><div id="fold-rank-human" class="p-fold-rank"></div></div><div id="cards-human" class="cards-row"></div></div>
+
+        <div class="footer-ui">
+            <div class="game-msg" id="msg-box">LOADING...</div>
+            <div class="action-btn-group">
+                <button id="btn-deal" onclick="playDelt4(); gm.handleBtnClick('deal')">DEAL</button>
+                <button id="btn-reveal" onclick="gm.handleBtnClick('reveal')" disabled>REVEAL</button>
+                <button id="btn-fold" class="fold-btn" onclick="gm.handleBtnClick('fold')" disabled>FOLD (+1)</button>
+                <button id="btn-showdown" onclick="gm.handleBtnClick('showdown')" disabled>SHOWDOWN</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="deck-info">
+        <div class="guide-h" style="font-size:1.4vh; font-weight:bold; color:#ffd700;">UNREVEALED</div>
+        <div id="remaining-cards" class="remaining-container"></div>
+    </div>
 
 <script>
-    let _0xtextData = null;
-    fetch('textdata.json')
-        .then(response => response.json())
-        .then(data => { _0xtextData = data; })
-        .catch(error => console.error('Error loading textdata:', error));
+    let TEXT_DATA = null;
 
-    const firebaseConfig = { apiKey: "AIzaSyCvxUeqc28cRZ8RL4jpAwtakMxRo5d6zbU", authDomain: "aviewpro.firebaseapp.com", databaseURL: "https://aviewpro-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "aviewpro", storageBucket: "aviewpro.firebasestorage.app", messagingSenderId: "592622610945", appId: "1:592622610945:web:7d56b09e966a4faac62e00", measurementId: "G-NZQ5ZFXG2F" };
+    // JSON 로드 완료 시까지 기다리는 Promise 생성
+    const dataPromise = fetch('textdata.json')
+        .then(res => res.json())
+        .then(data => {
+            TEXT_DATA = data;
+            document.getElementById('msg-box').innerText = TEXT_DATA.gameMsg.ready;
+            return data;
+        })
+        .catch(err => console.error("Data Load Error:", err));
 
-    let _0xaiCandidates = [], _0xhistory = [], _0xinputStr = "", _0xturnCount = 8;
-    let _0xisTutorial = false, _0xtutorialStep = 0, _0xcurrentTipType = "";
-    let _0xparadoxMusicTriggered = false, _0xalarmTriggered = false, _0xzeroOverlayTriggered = false;
-    let _0xcurrentVolume = 0.15;
-    let _0xfailLoopInterval = null; 
-    let _0xsuccessLoopInterval = null; 
-    let _0xmeowLoopInterval = null; 
-    let _0xmeowCount = 0; 
-    
-    let _0xbgm = new Audio("002. ErikMMusic - The Dusty Attic.mp3");
-    _0xbgm.loop = true;
-    _0xbgm.playbackRate = 2.0;
-    const _0xclickSfx = new Audio("https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3");
-    const _0xspecialClickSfx = new Audio("Click.mp3");
-    const _0xmeowSfx = new Audio("moeeza3-kitten-cat-meow-437244.mp3");
-    const _0xemergencySfx = new Audio("비상알람.mp3");
-    const _0xfailSfx = new Audio("띠용.mp3");
-    const _0xsuccessSfx = new Audio("고양이 코골이_[cut_5sec].mp3");
-    const _0xnyaBgmSfx = new Audio("냥이 브금.mp3");
-    _0xnyaBgmSfx.loop = true; 
-    const _0xlightsOffSfx = new Audio("소등.mp3");
-
-    const _0xoriginalBodyContent = document.body.innerHTML;
-
-    let _0xpoisonInterval = null;
-
-    function _0x3f2a(val) { 
-        _0xcurrentVolume = parseFloat(val);
-        if (_0xbgm.src.includes("SoundHelix-Song-8.mp3")) {
-            _0xbgm.volume = Math.min(1.0, _0xcurrentVolume * 0.5616);
-        } else {
-            _0xbgm.volume = _0xcurrentVolume; 
-        }
-        _0xmeowSfx.volume = Math.min(1.0, _0xcurrentVolume * 1.17); 
-        _0xemergencySfx.volume = Math.min(1.0, _0xcurrentVolume * 2.56);
-        _0xfailSfx.volume = Math.min(1.0, _0xcurrentVolume * 3.0); 
-        _0xsuccessSfx.volume = _0xcurrentVolume;
-        _0xspecialClickSfx.volume = Math.min(1.0, _0xcurrentVolume * 3.0);
-        _0xnyaBgmSfx.volume = _0xcurrentVolume * 0.6; 
-        _0xlightsOffSfx.volume = Math.min(1.0, _0xcurrentVolume * 1.5);
-    }
-    
-    _0x3f2a(0.15);
-
-    function _0xplayClick() { 
-        const sc = _0xclickSfx.cloneNode(); 
-        sc.volume = Math.min(1.0, _0xcurrentVolume * 8.0); 
-        sc.play().catch(e=>{}); 
-        if(_0xbgm.paused) _0xbgm.play().catch(e=>{}); 
-    }
-
-    function _0xplaySpecialClick() { 
-        const sc = _0xspecialClickSfx.cloneNode(); 
-        sc.volume = Math.min(1.0, _0xcurrentVolume * 3.0);
-        sc.play().catch(e=>{}); 
-    }
-
-    function _0xplayNyaBgm() {
-        if(_0xbgm) _0xbgm.pause();
-        _0xbgm = _0xnyaBgmSfx;
-        _0xbgm.volume = _0xcurrentVolume * 0.6; 
-        _0xbgm.currentTime = 0;
-        _0xbgm.play().catch(e=>{});
-    }
-
-    function _0xsimBtn(btnId) {
-        const btn = document.getElementById(btnId);
-        if (btn) {
-            btn.classList.add('active');
-            setTimeout(() => btn.classList.remove('active'), 100);
-        }
-    }
-
-    function _0x7c3d(type) {
-        if(type === 'CLR') {
-            _0xsimBtn('clr-btn');
-            _0xplaySpecialClick();
-            _0xclrIn(true);
-        }
-        if(type === 'ENT') {
-            _0xsimBtn('ent-btn');
-            _0xplaySpecialClick();
-            _0xentCli(true);
-        }
-    }
-
-    function _0x4c5b() {
-        _0xplayClick();
-        if(_0xfailLoopInterval) { clearInterval(_0xfailLoopInterval); _0xfailLoopInterval = null; }
-        if(_0xsuccessLoopInterval) { clearInterval(_0xsuccessLoopInterval); _0xsuccessLoopInterval = null; }
-        if(_0xmeowLoopInterval) { clearInterval(_0xmeowLoopInterval); _0xmeowLoopInterval = null; }
-        document.getElementById('setup').style.display = 'none';
-        document.getElementById('setup-footer').style.display = 'none';
-        document.getElementById('game-box').style.display = 'flex';
-        document.getElementById('info-panel').style.display = 'flex';
-        _0xresGm();
-    }
-
-    function _0xresGm() {
-        _0xaiCandidates = []; _0xhistory = []; _0xinputStr = ""; _0xturnCount = 8; _0xmeowCount = 0;
-        _0xparadoxMusicTriggered = false; _0xalarmTriggered = false; _0xzeroOverlayTriggered = false;
-        if(_0xpoisonInterval) { clearInterval(_0xpoisonInterval); _0xpoisonInterval = null; }
-        // 3자리 숫자야구 후보군 생성 (720가지)
-        for(let i=0; i<=999; i++){
-            let n = i.toString().padStart(3, '0');
-            if(new Set(n).size === 3) _0xaiCandidates.push(n);
-        }
-        _0xupUI();
-    }
-
-    function _0xresDir() {
-        _0xplayClick();
-        if(_0xfailLoopInterval) { clearInterval(_0xfailLoopInterval); _0xfailLoopInterval = null; }
-        if(_0xsuccessLoopInterval) { clearInterval(_0xsuccessLoopInterval); _0xsuccessLoopInterval = null; }
-        if(_0xmeowLoopInterval) { clearInterval(_0xmeowLoopInterval); _0xmeowLoopInterval = null; }
-        _0xbgm.pause();
-        _0xbgm = new Audio("002. ErikMMusic - The Dusty Attic.mp3");
-        _0xbgm.loop = true;
-        _0xbgm.playbackRate = 2.0;
-        document.body.innerHTML = _0xoriginalBodyContent;
-        _0x3f2a(document.getElementById('volume-slider')?.value || 0.15);
-        _0x4c5b();
-    }
-
-    function _0x1d2e() {
-        if(!_0xtextData) return;
-        _0xisTutorial = true; _0xcurrentTipType = ""; _0xtutorialStep = 1;
-        _0x4c5b();
-        document.getElementById('obs-btn').disabled = true;
-        document.getElementById('tutorial-overlay').style.display = 'flex';
-        _0xappTut();
-    }
-
-    window.showTips = function(type) {
-        if(!_0xtextData) return;
-        _0xplayClick();
-        _0xisTutorial = false;
-        _0xcurrentTipType = type;
-        _0xtutorialStep = 0;
-        const tutOverlay = document.getElementById('tutorial-overlay');
-        if (tutOverlay) {
-            tutOverlay.style.display = 'flex';
-            document.getElementById('tut-esc-guide').style.display = 'none';
-            _0xappTip();
-        }
+    const firebaseConfig = { 
+        apiKey: "AIzaSyCvxUeqc28cRZ8RL4jpAwtakMxRo5d6zbU", 
+        authDomain: "aviewpro.firebaseapp.com", 
+        databaseURL: "https://aviewpro-default-rtdb.asia-southeast1.firebasedatabase.app", 
+        projectId: "aviewpro", 
+        storageBucket: "aviewpro.firebasestorage.app", 
+        messagingSenderId: "592622610945", 
+        appId: "1:592622610945:web:7d56b09e966a4faac62e00", 
+        measurementId: "G-NZQ5ZFXG2F" 
     };
 
-    function _0x5a1b() {
-        _0xplayClick();
-        if (_0xcurrentTipType) {
-            _0xtutorialStep++;
-            if (_0xtutorialStep >= _0xtextData.tips[_0xcurrentTipType].length) {
-                document.getElementById('tutorial-overlay').style.display = 'none';
+    window.addEventListener('keydown', (e) => {
+        if (document.getElementById('main-screen').style.display !== 'none') return;
+        if (e.key === 'Shift') {
+            const gameOverOverlay = document.getElementById('game-over-overlay');
+            if (gameOverOverlay.style.display === 'flex') {
+                playDelt4(); gm.resetForNewGame();
                 return;
             }
-            _0xappTip();
-        } else {
-            _0xnxtTut();
         }
-    }
-
-    function _0xappTip() {
-        const title = document.getElementById('tut-title');
-        const desc = document.getElementById('tut-desc');
-        if (title && desc) {
-            const tip = _0xtextData.tips[_0xcurrentTipType][_0xtutorialStep];
-            title.innerText = tip.title;
-            desc.innerHTML = tip.desc.replace(/\n/g, "<br>"); 
-        }
-    }
-
-    function _0xnxtTut() {
-        if (_0xtutorialStep === 1 || _0xtutorialStep === 2) {
-            document.getElementById('tutorial-overlay').style.display = 'none';
-            return;
-        }
-        _0xtutorialStep++;
-        if (_0xtutorialStep > 6) { location.reload(); return; }
-        _0xappTut();
-    }
-
-    function _0xappTut() {
-        const title = document.getElementById('tut-title');
-        const desc = document.getElementById('tut-desc');
-        const nextBtn = document.getElementById('tut-next-btn');
-        const turnCounter = document.getElementById('turn-counter');
-        const chanceBox = document.getElementById('chance-box');
-        
-        document.getElementById('game-box').classList.add('tutorial-dim');
-        document.getElementById('info-panel').classList.add('tutorial-dim');
-        document.querySelectorAll('.key-btn, #ent-btn, #clr-btn, #obs-btn, #display, #log-window, #candidates-box, #chance-area, #zero-btn, .log-item, #chance-box').forEach(el => el.classList.remove('tutorial-highlight'));
-        turnCounter.classList.remove('tutorial-highlight-turn');
-        nextBtn.classList.remove('btn-cyan');
-
-        const stepData = _0xtextData.tutorial.steps.find(s => s.step === _0xtutorialStep);
-        if (stepData) {
-            title.innerText = stepData.title;
-            desc.innerHTML = stepData.desc;
-        }
-
-        if (_0xtutorialStep === 1) {
-            document.getElementById('game-box').classList.remove('tutorial-dim');
-            document.querySelectorAll('.key-btn, #zero-btn, #display').forEach(el => el.classList.add('tutorial-highlight'));
-        } else if (_0xtutorialStep === 2) {
-            document.getElementById('game-box').classList.remove('tutorial-dim');
-            document.getElementById('ent-btn').classList.add('tutorial-highlight');
-            document.getElementById('clr-btn').classList.add('tutorial-highlight');
-        } else if (_0xtutorialStep === 3) {
-            document.getElementById('game-box').classList.remove('tutorial-dim');
-            const firstLog = document.querySelector('.log-item');
-            if(firstLog) firstLog.classList.add('tutorial-highlight');
-        } else if (_0xtutorialStep === 4) {
-            document.getElementById('info-panel').classList.remove('tutorial-dim');
-            document.getElementById('candidates-box').classList.add('tutorial-highlight');
-        } else if (_0xtutorialStep === 5) {
-            document.getElementById('info-panel').classList.remove('tutorial-dim');
-            chanceBox.classList.add('tutorial-highlight');
-            document.getElementById('game-box').classList.remove('tutorial-dim');
-            document.getElementById('obs-btn').classList.add('tutorial-highlight');
-        } else if (_0xtutorialStep === 6) {
-            document.getElementById('info-panel').classList.remove('tutorial-dim');
-            turnCounter.classList.add('tutorial-highlight-turn');
-            nextBtn.classList.add('btn-cyan');
-            nextBtn.innerText = _0xtextData.tutorial.button_finish;
-        }
-    }
-
-    window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            if (document.getElementById('credit-overlay')?.style.display === 'flex') { _0xclsCr(); return; }
-            if (_0xisTutorial) location.reload();
-            if (document.getElementById('obs-overlay')?.style.display === 'flex') { document.getElementById('obs-overlay').style.display = 'none'; }
-            return;
-        }
-        if (document.getElementById('obs-overlay')?.style.display === 'flex') {
-            if (e.key === 'Enter') _0x6f5a(); return;
-        }
-        
         if (e.key === 'Enter') {
-            e.preventDefault();
-            if (document.getElementById('game-box').style.display === 'flex') {
-                _0x7c3d('ENT');
-            }
-            return;
+            const dealBtn = document.getElementById('btn-deal');
+            const revealBtn = document.getElementById('btn-reveal');
+            const showdownBtn = document.getElementById('btn-showdown');
+            if (!dealBtn.disabled) { playDelt4(); gm.handleBtnClick('deal'); }
+            else if (!revealBtn.disabled) gm.handleBtnClick('reveal');
+            else if (!showdownBtn.disabled) gm.handleBtnClick('showdown');
         }
-        
-        if (e.key >= '0' && e.key <= '9') {
-            const btn = document.querySelector(e.key === '0' ? '#zero-btn' : `.key-btn[data-key="${e.key}"]`);
-            if(btn) { btn.classList.add('active'); setTimeout(() => btn.classList.remove('active'), 100); }
-            _0x9b8a(e.key);
-            return;
+        if (gm.phase === 'reveal' && ['1', '2', '3', '4', '5'].includes(e.key)) {
+            gm.toggleCardSelection(parseInt(e.key) - 1);
         }
-        
-        if (e.key === 'Delete' || e.key === 'Backspace') {
-            _0x7c3d('CLR');
-            return;
+        if (e.key === '0') {
+            const foldBtn = document.getElementById('btn-fold');
+            if (!foldBtn.disabled) gm.handleBtnClick('fold');
         }
     });
 
-    function _0x9b8a(n) { 
-        _0xplayClick(); 
-        // 3자리 입력으로 제한
-        if(_0xinputStr.length < 3 && !_0xinputStr.includes(n)) { 
-            _0xinputStr += n; 
-            document.getElementById('display').innerText = _0xinputStr; 
-            if (_0xisTutorial && _0xtutorialStep === 1 && _0xinputStr.length === 3) {
-                setTimeout(() => { _0xtutorialStep = 2; document.getElementById('tutorial-overlay').style.display = 'flex'; _0xappTut(); }, 300);
-            }
-        } 
+    function playDelt4() {
+        const sfx = document.getElementById('sfx-delt4');
+        sfx.volume = 1.0; sfx.currentTime = 0; sfx.play().catch(e => {});
     }
 
-    function _0xclrIn(isSpecial) { if(!isSpecial) _0xplayClick(); _0xinputStr = ""; document.getElementById('display').innerText = "---"; }
-    
-    function _0xentCli(isSpecial) {
-        // 3자리 입력 체크
-        if(_0xinputStr.length === 3 && _0xturnCount > 0) {
-            if(!isSpecial) _0xplayClick();
-            const res = _0xaiRes(_0xinputStr);
-            _0xhistory.push({ n: _0xinputStr, s: res.s, b: res.b });
-            _0xturnCount--; _0xclrIn(true); _0xupUI();
-            if (_0xisTutorial && _0xtutorialStep === 2) {
-                setTimeout(() => { _0xtutorialStep = 3; document.getElementById('tutorial-overlay').style.display = 'flex'; _0xappTut(); }, 500);
-            }
-        }
+    function updateMasterVol(type, val) {
+        if(type === 'bgm') document.getElementById('bgm').volume = val;
+        if(type === 'sfx') gm.sfxVol = val;
     }
 
-    function _0xaiRes(guess) {
-        const outcomes = {};
-        _0xaiCandidates.forEach(cand => {
-            let s=0, b=0;
-            // 3자리 S/B 로직
-            for(let i=0; i<3; i++){ if(guess[i] === cand[i]) s++; else if(cand.includes(guess[i])) b++; }
-            const key = `${s}S${b}B`;
-            if(!outcomes[key]) outcomes[key] = [];
-            outcomes[key].push(cand);
-        });
-        let bestKey = ""; let maxCount = -1;
-        for(let key in outcomes) {
-            if(key === "3S0B") continue; // 3S0B(정답)는 무조건 마지막까지 피함
-            if(outcomes[key].length > maxCount) { maxCount = outcomes[key].length; bestKey = key; }
-        }
-        if(!bestKey || _0xaiCandidates.length <= 1) {
-            // 더 이상 피할 곳이 없으면 거짓말 판정
-            const fakeS = Math.floor(Math.random() * 2);
-            const fakeB = Math.floor(Math.random() * 2);
-            bestKey = `${fakeS}S${fakeB}B`;
-            _0xaiCandidates = _0xaiCandidates.filter(c => c !== guess); 
-        } else { _0xaiCandidates = outcomes[bestKey]; }
-        const match = bestKey.match(/(\d)S(\d)B/);
-        return { s: parseInt(match[1]), b: parseInt(match[2]) };
+    function toggleSoundPanel() {
+        const p = document.getElementById('sound-panel');
+        p.style.display = p.style.display === 'flex' ? 'none' : 'flex';
     }
 
-    function _0xstPsL() {
-        if(_0xpoisonInterval) return;
-        const targetText = "Cat is Poisoned in the Box";
-        const el = document.getElementById('chance-val');
-        let index = targetText.length;
-        let isDeleting = true;
+    const VAL_ORDER = {'7':6, 'A':5, '5':4, '4':3, '3':2, '2':1};
+    const SUIT_ORDER = {'♠':4, '♥':3, '♦':2, '♣':1, 'N':0};
+    const VALUES = ['2', '3', '4', '5', 'A'];
+    const SUITS = ['♠', '♥', '♣', '♦'];
 
-        _0xpoisonInterval = setInterval(() => {
-            if (isDeleting) {
-                el.innerHTML = `<span class="poison-text" style="color:var(--green); text-shadow: 0 0 1.5vh var(--green);">${targetText.substring(0, index)}</span>`;
-                index--;
-                if (index < 0) { isDeleting = false; }
-            } else {
-                el.innerHTML = `<span class="poison-text" style="color:var(--green); text-shadow: 0 0 1.5vh var(--green);">${targetText.substring(0, index)}</span>`;
-                index++;
-                if (index > targetText.length) { isDeleting = true; }
-            }
-        }, 150);
+    let _0xisTutorial = false;
+    let _0xtutorialStep = 0;
+
+    // 튜토리얼 버튼 클릭 시 비동기 데이터를 기다렸다가 실행
+    async function _0x1d2e() {
+        if (!TEXT_DATA) await dataPromise; // 데이터 로드 대기
+        _0xisTutorial = true; _0xtutorialStep = 1;
+        document.getElementById('main-screen').style.display = 'none';
+        document.body.classList.add('tutorial-active-lock');
+        window.addEventListener('keydown', _0xHandleEsc);
+        _0xappTut();
     }
 
-    function _0xupUI() {
-        const turnCounter = document.getElementById('turn-counter');
-        turnCounter.innerText = _0xturnCount;
-        const prob = _0xaiCandidates.length === 0 ? 0 : (1 / _0xaiCandidates.length * 100);
-        const chanceValEl = document.getElementById('chance-val');
-        const chanceTitleEl = document.getElementById('chance-title');
-        const chanceBoxEl = document.getElementById('chance-box');
-        const catImg = document.getElementById('prob-cat-img');
-        const deadX = document.getElementById('dead-x');
-        const flashOverlay = document.getElementById('flash-overlay');
-        const paradoxOverlay = document.getElementById('paradox-cat-overlay');
+    function _0xHandleEsc(e) { if (e.key === 'Escape') { _0xisTutorial = false; location.reload(); } }
+
+    function _0xappTut() {
+        if (!TEXT_DATA) return;
+        const title = document.getElementById('tut-title');
+        const desc = document.getElementById('tut-desc');
+        const overlay = document.getElementById('tutorial-overlay');
+        document.querySelectorAll('.tutorial-highlight').forEach(el => el.classList.remove('tutorial-highlight'));
         
-        if(_0xaiCandidates.length === 0) {
-            if(!_0xparadoxMusicTriggered) {
-                _0xbgm.pause();
-                setTimeout(() => {
-                    _0xbgm = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3");
-                    _0xbgm.loop = true;
-                    _0xbgm.volume = Math.min(1.0, _0xcurrentVolume * 0.5616);
-                    _0xbgm.play().catch(e => {});
-                }, 4000);
-                _0xparadoxMusicTriggered = true;
-            }
-            if(!_0xzeroOverlayTriggered) {
-                _0xlightsOffSfx.currentTime = 0;
-                _0xlightsOffSfx.play().catch(e=>{});
-
-                flashOverlay.style.transition = 'none';
-                flashOverlay.style.background = '#000';
-                flashOverlay.style.opacity = '1';
-                
-                setTimeout(() => { 
-                    flashOverlay.style.transition = 'opacity 1.5s ease';
-                    flashOverlay.style.opacity = '0'; 
-                }, 3000);
-                
-                if(paradoxOverlay) {
-                    paradoxOverlay.style.display = 'block';
-                    paradoxOverlay.style.opacity = '1';
-                    paradoxOverlay.style.animation = "fadeOutLong 16s forwards";
-                }
-
-                _0xzeroOverlayTriggered = true;
-                _0xstPsL();
-            }
-            chanceTitleEl.style.display = 'none';
-            chanceBoxEl.style.borderColor = 'var(--green)';
-            catImg.style.opacity = '0'; catImg.style.filter = 'blur(2vh)';
-            turnCounter.style.color = 'var(--green)'; turnCounter.style.textShadow = '0 0 2vh var(--green)';
-            deadX.style.display = 'block'; 
+        const stepKey = 'step' + _0xtutorialStep;
+        const data = TEXT_DATA.tutorial[stepKey];
+        
+        if (data) {
+            title.innerText = data.title;
+            desc.innerHTML = data.content;
+            overlay.style.display = 'flex';
         } else {
-            deadX.style.display = 'none';
-            if(paradoxOverlay) { paradoxOverlay.style.display = 'none'; paradoxOverlay.style.animation = 'none'; }
-            if(_0xpoisonInterval) { clearInterval(_0xpoisonInterval); _0xpoisonInterval = null; }
-
-            let currentColor = 'var(--purple)';
-            let currentShadow = '0 0 2.5vh var(--purple)';
-
-            if (prob === 100) {
-                currentColor = 'var(--red)';
-                currentShadow = '0 0 2.5vh var(--red)';
-                if(!_0xalarmTriggered) {
-                    _0xemergencySfx.play().catch(e=>{});
-                    flashOverlay.style.transition = 'opacity 1.5s ease';
-                    flashOverlay.style.background = 'radial-gradient(circle, rgba(255, 0, 0, 0) 70%, rgba(255, 0, 0, 0.4) 100%)';
-                    flashOverlay.style.opacity = '1';
-                    setTimeout(() => { flashOverlay.style.opacity = '0'; }, 1500);
-                    _0xalarmTriggered = true;
-                }
-            } else if (prob >= 10 && prob <= 51) {
-                currentColor = 'var(--cyan)';
-                currentShadow = '0 0 2.5vh var(--cyan)';
-                _0xalarmTriggered = false;
-            } else {
-                _0alarmTriggered = false;
-            }
-
-            chanceValEl.style.color = currentColor;
-            chanceValEl.style.textShadow = currentShadow;
-            
-            chanceTitleEl.style.display = 'block';
-            chanceTitleEl.style.color = currentColor;
-            chanceTitleEl.style.textShadow = currentShadow;
-            
-            chanceValEl.innerText = prob.toFixed(2) + "%";
-            chanceBoxEl.style.borderColor = currentColor;
-            turnCounter.style.color = currentColor;
-            const blurAmount = Math.max(0, (prob * 0.05));
-            const opacityAmount = Math.max(0.1, 1 - (prob / 100));
-            catImg.style.display = 'block'; catImg.style.opacity = opacityAmount;
-            catImg.style.filter = `blur(${blurAmount}vh)`; 
-            catImg.style.borderColor = currentColor;
-        }
-        
-        document.getElementById('log-window').innerHTML = _0xhistory.map(h => {
-            const resultText = (h.s === 0 && h.b === 0) ? `<span class="log-out">OUT</span>` : `${h.s}S / ${h.b}B`;
-            return `<div class="log-item"><span class="log-n">${h.n}</span><span class="log-sb">${resultText}</span></div>`;
-        }).join('');
-        document.getElementById('log-window').scrollTop = document.getElementById('log-window').scrollHeight;
-
-        const slice = [..._0xaiCandidates].sort(() => 0.5 - Math.random()).slice(0, 100);
-        
-        let pixelateStrength = 0;
-        if (prob >= 25) {
-            pixelateStrength = 0; 
-        } else if (prob >= 5) {
-            pixelateStrength = 0.05; 
-        } else if (prob >= 1) {
-            pixelateStrength = 0.15; 
-        } else {
-            pixelateStrength = 0.25; 
-        }
-
-        document.getElementById('cand-list').innerHTML = slice.map(c => `<div class="cand-item" style="filter: blur(${pixelateStrength}vh) contrast(180%);">${c}</div>`).join('');
-
-        const statusEl = document.getElementById('status');
-        const entBtn = document.getElementById('ent-btn');
-        if(_0xturnCount <= 0) {
-            entBtn.disabled = true;
-            statusEl.innerText = "측정 완료 (관측만 가능)";
-            statusEl.style.animation = "none";
-            statusEl.style.color = "var(--red)";
-            statusEl.style.textShadow = "0 0 1vh var(--red)";
-        } else {
-            entBtn.disabled = false;
-            statusEl.innerText = "양자고양이 위치 관측 중...";
-            statusEl.style.animation = "neonShift 10s infinite alternate linear";
-        }
-    }
-
-    function _0xrndPrCl() {
-        const field = document.getElementById('quantum-field');
-        field.innerHTML = "";
-        const neons = ['var(--cyan)', 'var(--purple)', 'var(--green)', 'var(--red)'];
-        const list = _0xaiCandidates.length > 0 ? _0xaiCandidates : ["ERR", "VOID", "000"];
-        list.slice(0, 80).forEach(num => {
-            const span = document.createElement('span');
-            span.className = 'bg-candidate';
-            span.innerText = num;
-            let x, y;
-            do { x = Math.random() * 85 + 5; y = Math.random() * 85 + 5; } while (x > 25 && x < 75 && y > 20 && y < 80);
-            span.style.left = x + "%"; span.style.top = y + "%";
-            span.style.color = neons[Math.floor(Math.random() * neons.length)];
-            span.style.animationDelay = (Math.random() * 4) + "s";
-            field.appendChild(span);
-        });
-    }
-
-    function _0x2f1e() {
-        if(_0xisTutorial || !_0xtextData) return;
-        _0xplaySpecialClick();
-        if(_0xaiCandidates.length === 0) {
-            _0xmeowCount = 0; 
-            _0xmeowSfx.play().catch(e=>{}); 
-            _0xmeowCount++;
-            if(_0xmeowLoopInterval) clearInterval(_0xmeowLoopInterval);
-            _0xmeowLoopInterval = setInterval(() => {
-                if(_0xmeowCount < 10) {
-                    _0xmeowSfx.currentTime = 0;
-                    _0xmeowSfx.play().catch(e=>{});
-                    _0xmeowCount++;
-                } else {
-                    clearInterval(_0xmeowLoopInterval);
-                }
-            }, 6000);
-
-            const ed = _0xtextData.endings.paradox;
-            _0xrnEG(ed.type, ed.result, ed.message, 'var(--green)', true, true);
-            return;
-        }
-        _0xrndPrCl();
-        document.getElementById('obs-overlay').style.display = 'flex';
-        setTimeout(() => { const obsInput = document.getElementById('obs-num'); if(obsInput){ obsInput.value = ""; obsInput.focus(); } }, 10);
-    }
-
-    function _0x6f5a() {
-        const guess = document.getElementById('obs-num').value;
-        if(guess.length === 3) {
-            _0xplayClick();
-            // 남은 후보 중 하나를 랜덤하게 정답으로 확정 (양자 붕괴)
-            let realSecret = _0xaiCandidates[Math.floor(Math.random() * _0xaiCandidates.length)];
-            if(guess === realSecret) {
-                _0xsuccessSfx.play().catch(e=>{});
-                if(_0xsuccessLoopInterval) clearInterval(_0xsuccessLoopInterval);
-                _0xsuccessLoopInterval = setInterval(() => {
-                    _0xsuccessSfx.currentTime = 0;
-                    _0xsuccessSfx.play().catch(e=>{});
-                }, 6000);
-                
-                const ed = _0xtextData.endings.win;
-                _0xrnEG(ed.type, ed.result, ed.message, 'var(--cyan)', true, false);
-            } else {
-                _0xfailSfx.play().catch(e=>{});
-                if(_0xfailLoopInterval) clearInterval(_0xfailLoopInterval);
-                _0xfailLoopInterval = setInterval(() => {
-                    _0xfailSfx.currentTime = 0;
-                    _0xfailSfx.play().catch(e=>{});
-                }, 6000);
-                
-                const ed = _0xtextData.endings.lose;
-                _0xrnEG(ed.type, ed.result, ed.message, 'var(--red)', false, false);
-            }
-        }
-    }
-
-    function _0xrnEG(type, result, msg, color, isWin, isParadox) {
-        const winGif = "cat in the box.gif";
-        const paradoxGif = "Neon cat 2.gif";
-        const loseImg = "box.gif";
-        let mediaUrl = isParadox ? paradoxGif : (isWin ? winGif : loseImg);
-        
-        let emojiLanes = "";
-        if(isParadox) {
-            const longLane = "🐈 ".repeat(22);
-            emojiLanes = `
-                <div class="emoji-lane" style="top:15vh; animation: slide-h 24s linear infinite; animation-delay: -3s;">${longLane}</div>
-                <div class="emoji-lane" style="bottom:15vh; animation: slide-h 29s linear infinite reverse; animation-delay: -7s;">${longLane}</div>
-                <div class="emoji-lane" style="left:10vw; animation: slide-v 22s linear infinite; animation-delay: -12s;">${longLane.split(' ').join('<br>')}</div>
-                <div class="emoji-lane" style="right:10vw; animation: slide-v 26s linear infinite reverse; animation-delay: -1s;">${longLane.split(' ').join('<br>')}</div>
-            `;
-        }
-
-        let subButtons = "";
-        if (isParadox) {
-            subButtons = `<button onclick="window.showCredits()" style="font-family: 'Bebas Neue', cursive; width:65vh; padding:2vh 0; margin-top:5vh; background:#222; color:${color}; border:0.4vh solid ${color}; cursor:pointer; font-size:5vh; border-radius:2vh; font-weight:bold; box-shadow: 0 0 2vh ${color}; z-index:100; letter-spacing:0.3vh;">Credits</button>`;
-        } else {
-            const tipType = isWin ? 'success' : 'fail';
-            subButtons = `
-                <div style="display:flex; flex-direction:column; gap: 2vh; align-items: center; margin-top:4vh; width: 62vh; z-index:100;">
-                    <button onclick="window.showTips('${tipType}')" style="font-family: 'Bebas Neue', cursive; width:100%; padding:1.2vh 0; background:#333; color:${color}; border:0.2vh solid ${color}; cursor:pointer; font-size:4vh; border-radius:1.5vh; font-weight:bold; letter-spacing:0.2vh;">TIPS</button>
-                    <div style="display:flex; gap: 2.5vh; width: 100%;">
-                        <button onclick="location.reload()" style="font-family: 'Bebas Neue', cursive; flex:1; padding:1.2vh 0; background:#222; color:#fff; border:0.2vh solid #444; cursor:pointer; font-size:3.2vh; border-radius:1.5vh; letter-spacing:0.1vh;">Main Menu</button>
-                        <button onclick="_0xresDir()" style="font-family: 'Bebas Neue', cursive; flex:2; padding:1.2vh 0; background:#222; color:#fff; border:0.2vh solid ${color}; cursor:pointer; font-size:3.2vh; border-radius:1.5vh; letter-spacing:0.1vh;">Restart</button>
-                    </div>
-                </div>`;
-        }
-
-        document.body.innerHTML = `
-            <div id="version-tag">1.3 Version</div>
-            ${emojiLanes}
-            <div id="sound-control" style="z-index:20000;">
-                <span class="sound-icon">♪</span>
-                <input type="range" id="volume-slider-end" min="0" max="1" step="0.01" value="${_0xcurrentVolume}" oninput="_0x3f2a(this.value)">
-                <span class="sound-icon" style="font-size:1vh;">VOL</span>
-            </div>
-            <div id="credit-overlay">
-                <div class="side-cat-box"><img src="귀여운고양이도트2.jpg" class="side-cat-img" onclick="_0xplayNyaBgm()"></div>
-                <div id="credit-container" onmousedown="_0x8c21(event)" onmouseup="_0x7d4e(event)">
-                    <div id="credit-content"></div>
-                </div>
-                <div class="side-cat-box"><img src="귀여운고양이도트3.jpg" class="side-cat-img" style="animation-delay: -2s;" onclick="_0xplayNyaBgm()"></div>
-                <div class="credit-esc">Press ESC to Close</div>
-            </div>
-            <div id="tutorial-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:5000; flex-direction:column; align-items:center; justify-content:center;">
-                <div class="tutorial-msg-box">
-                    <h3 id="tut-title"></h3>
-                    <p id="tut-desc"></p>
-                    <button id="tut-next-btn" onclick="_0x5a1b()">확인</button>
-                    <div id="tut-esc-guide" class="esc-guide" style="display:none;"></div>
-                </div>
-            </div>
-            <div style="display:flex; flex-direction:column; align-items:center; justify-content:flex-start; min-height:100vh; text-align:center; box-sizing: border-box; position:relative; z-index:50; padding: 3vh 0; overflow: hidden;">
-                <img src="${mediaUrl}" style="border:0.4vh solid ${color}; border-radius:4vh; box-shadow: 0 0 3vh ${color}; width: 40vh; height: 40vh; object-fit: cover; margin-bottom: 2vh;">
-                <h1 style="font-size:6vh; color:${color}; margin: 1vh 0; text-shadow:0 0 2vh ${color};">${type}</h1>
-                <h2 style="font-size:3.5vh; color:#fff; margin-bottom: 1vh;">${result}</h2>
-                <p style="color:${isParadox ? color : '#aaa'}; font-size:2.2vh; max-width:80vh; line-height:1.4; margin: 1vh 0;">${msg}</p>
-                ${subButtons}
-            </div>`;
-            
-        document.getElementById('volume-slider-end').addEventListener('input', (e) => {
-            _0x3f2a(e.target.value);
-        });
-    }
-
-    let _0xcrdScrInt = null;
-    let _0xcrdY = 0;
-    let _0xcrdSpd = 0.55;
-
-    window.showCredits = function() {
-        if(!_0xtextData) return;
-        const overlay = document.getElementById('credit-overlay');
-        const content = document.getElementById('credit-content');
-        if (!overlay || !content) return;
-        
-        const text = _0xtextData.dev_story.join("\n");
-        
-        content.innerHTML = `
-            <div>${text}</div>
-            <img src="귀여운고양이.jpg" onclick="_0xplayNyaBgm()" style="width:67.5vh; height:auto; margin-top:5vh; border-radius:2vh; border:0.4vh solid var(--green); box-shadow: 0 0 2vh var(--green); cursor:pointer;">
-            <img src="Aview.png" class="credit-logo">
-        `;
-        overlay.style.display = 'flex';
-        _0xcrdY = window.innerHeight * 0.1;
-        _0xcrdSpd = 0.55;
-        
-        if (_0xcrdScrInt) clearInterval(_0xcrdScrInt);
-        _0xcrdScrInt = setInterval(() => {
-            _0xcrdY -= _0xcrdSpd;
-            content.style.transform = `translateY(${_0xcrdY}px)`;
-            if (_0xcrdY < -(content.scrollHeight + 25)) {
-                clearInterval(_0xcrdScrInt);
-            }
-        }, 16);
-    };
-
-    window._0x8c21 = function(e) { if(e) e.stopPropagation(); _0xcrdSpd = 4.5; };
-    window._0x7d4e = function(e) { if(e) e.stopPropagation(); _0xcrdSpd = 0.55; };
-    window._0xclsCr = function() {
-        const overlay = document.getElementById('credit-overlay');
-        if(overlay) {
             overlay.style.display = 'none';
-            if (_0xcrdScrInt) clearInterval(_0xcrdScrInt);
+            // 특정 스텝에서 하이라이트 효과
+            if (_0xtutorialStep === 4) document.getElementById('btn-deal').classList.add('tutorial-highlight');
+            if (_0xtutorialStep === 7) { 
+                document.getElementById('zone-human').classList.add('tutorial-highlight'); 
+                document.getElementById('btn-reveal').classList.add('tutorial-highlight'); 
+            }
+            if (_0xtutorialStep === 10) { 
+                document.getElementById('btn-showdown').classList.add('tutorial-highlight'); 
+                document.getElementById('btn-fold').classList.add('tutorial-highlight'); 
+            }
+        }
+    }
+
+    function _0x5a1b() {
+        const btnSfx = document.getElementById('sfx-btn');
+        btnSfx.volume = gm.sfxVol; btnSfx.currentTime = 0; btnSfx.play().catch(e => {});
+        _0xtutorialStep++;
+        if (_0xtutorialStep > 12) { _0xisTutorial = false; location.reload(); return; }
+        _0xappTut();
+    }
+    
+    const gm = {
+        round: 1, players: ['ai1', 'ai2', 'ai3', 'human'],
+        totalScores: { ai1:0, ai2:0, ai3:0, human:0 },
+        roundLogs: { ai1: Array(7).fill(''), ai2: Array(7).fill(''), ai3: Array(7).fill(''), human: Array(7).fill('') },
+        hands: { ai1:[], ai2:[], ai3:[], human:[] },
+        revealedIdx: { ai1:[], ai2:[], ai3:[], human:[] },
+        isFolded: { ai1:false, ai2:false, ai3:false, human:false },
+        selected: [], deckLeft: [], phase: 'idle', sfxVol: 0.4,
+
+        handleBtnClick(action) {
+            const btnSfx = document.getElementById('sfx-btn');
+            btnSfx.volume = this.sfxVol; btnSfx.currentTime = 0; btnSfx.play().catch(e => {});
+            if(action === 'deal') { this.deal(); if(_0xisTutorial && _0xtutorialStep === 4) { _0xtutorialStep = 5; _0xappTut(); } }
+            if(action === 'reveal') { this.toFoldPhase(); if(_0xisTutorial && _0xtutorialStep === 7) { _0xtutorialStep = 8; _0xappTut(); } }
+            if(action === 'fold' || action === 'showdown') { if(action === 'fold') this.humanFold(); else this.executeShowdown(); if(_0xisTutorial && _0xtutorialStep === 10) { _0xtutorialStep = 11; _0xappTut(); } }
+        },
+        startGame() { document.getElementById('main-screen').style.display = 'none'; this.handleBtnClick('deal'); },
+        resetForNewGame() {
+            document.getElementById('game-over-overlay').style.display = 'none';
+            this.round = 1; this.totalScores = { ai1:0, ai2:0, ai3:0, human:0 };
+            this.roundLogs = { ai1: Array(7).fill(''), ai2: Array(7).fill(''), ai3: Array(7).fill(''), human: Array(7).fill('') };
+            this.deal();
+        },
+        deal() {
+            const audio = document.getElementById('bgm'); if(audio.paused) { audio.volume = 0.06; audio.play().catch(e => {}); }
+            if (this.round > 7) return;
+            this.phase = 'reveal'; this.selected = []; this.isFolded = { ai1:false, ai2:false, ai3:false, human:false };
+            this.clearResults();
+            this.players.forEach(p => { 
+                document.getElementById('zone-'+p).classList.remove('folded'); 
+                document.getElementById('fold-rank-'+p).innerText = ""; 
+                const resEl = document.getElementById('res-'+p); resEl.className = 'p-result'; resEl.innerText = ""; 
+            });
+            let deck = []; VALUES.forEach(v => SUITS.forEach(s => deck.push({v, s, is7:false})));
+            deck.push({v: '7', s: 'N', is7: true}); deck.sort(() => Math.random() - 0.5);
+            this.players.forEach((p, i) => { 
+                this.hands[p] = deck.slice(i * 5, (i + 1) * 5); 
+                if(p.startsWith('ai')) this.aiDecideReveal(p); 
+            });
+            this.deckLeft = deck.slice(20);
+            document.getElementById('btn-deal').disabled = true; 
+            document.getElementById('msg-box').innerText = TEXT_DATA ? TEXT_DATA.gameMsg.selectReveal : "";
+            this.render(true);
+            this.updateUI(); 
+            this.showUnrevealed();
+        },
+
+        aiDecideReveal(p) {
+            const hand = this.hands[p];
+            const ev = this.evaluate(hand);
+            const vCounts = {};
+            hand.forEach((c, i) => { vCounts[c.v] = vCounts[c.v] || []; vCounts[c.v].push(i); });
+            let hideIdx = -1;
+            if (ev.rank === 0.5) {
+                const pairVal = Object.keys(vCounts).find(v => vCounts[v].length === 2);
+                if (pairVal) hideIdx = vCounts[pairVal][0];
+            } 
+            else if (ev.rank === 10) { hideIdx = hand.findIndex(c => c.is7); } 
+            else if (ev.rank === 6) {
+                const fourVal = Object.keys(vCounts).find(v => vCounts[v].length === 4);
+                if (fourVal) hideIdx = vCounts[fourVal][0];
+            }
+            if (hideIdx === -1) { hideIdx = Math.floor(Math.random() * 5); }
+            this.revealedIdx[p] = [0, 1, 2, 3, 4].filter(i => i !== hideIdx);
+        },
+
+        aiProcessFold() {
+            this.players.slice(0, 3).forEach(p => {
+                if (this.isFolded[p]) return;
+                const myHand = this.hands[p];
+                const myEv = this.evaluate(myHand);
+                const hiddenCards = [];
+                this.players.forEach(pOther => {
+                    this.hands[pOther].forEach((c, idx) => {
+                        if (!this.revealedIdx[pOther].includes(idx)) hiddenCards.push(c);
+                    });
+                });
+                this.deckLeft.forEach(c => hiddenCards.push(c));
+                let scenarios = [];
+                const generateScenarios = (pool, count, current = []) => {
+                    if (current.length === count) { scenarios.push([...current]); return; }
+                    for (let i = 0; i < pool.length; i++) {
+                        let nextPool = [...pool];
+                        let pick = nextPool.splice(i, 1)[0];
+                        generateScenarios(nextPool, count, [...current, pick]);
+                        if (scenarios.length >= 24) return;
+                    }
+                };
+                generateScenarios(hiddenCards, 4);
+                let winCount = 0, highRankCount = 0, opponentFixedHighRank = false;
+                this.players.forEach(pOther => {
+                    if (pOther === p) return;
+                    const revealed = this.revealedIdx[pOther].map(idx => this.hands[pOther][idx]);
+                    const evFixed = this.evaluate(revealed);
+                    if (evFixed.rank >= 1) opponentFixedHighRank = true;
+                });
+                scenarios.forEach(scenario => {
+                    const othersFullHands = {};
+                    let sIdx = 0;
+                    this.players.forEach(pOther => {
+                        if (pOther === p) return;
+                        const fullHand = this.revealedIdx[pOther].map(idx => this.hands[pOther][idx]);
+                        fullHand.push(scenario[sIdx++]);
+                        othersFullHands[pOther] = this.evaluate(fullHand);
+                    });
+                    const allRes = [myEv, ...Object.values(othersFullHands)];
+                    const pOtherKeys = Object.keys(othersFullHands);
+                    let isIWin = true;
+                    pOtherKeys.forEach(pk => {
+                        if (this.compare(myEv, othersFullHands[pk], allRes) < 0) isIWin = false;
+                        if (othersFullHands[pk].rank >= 1) highRankCount++;
+                    });
+                    if (isIWin) winCount++;
+                });
+                let shouldStay = false;
+                if (myEv.rank === 10) {
+                    if (opponentFixedHighRank) shouldStay = true;
+                    else if (highRankCount >= 18) shouldStay = true;
+                    else if (Math.random() < 0.5) shouldStay = true;
+                } else {
+                    if (winCount >= 6) shouldStay = true;
+                }
+                if (!shouldStay) this.fold(p, 1);
+            });
+        },
+
+        toFoldPhase() {
+            this.phase = 'fold'; this.revealedIdx.human = [...this.selected]; this.selected = [];
+            document.getElementById('btn-reveal').disabled = true; document.getElementById('btn-fold').disabled = false; document.getElementById('btn-showdown').disabled = false;
+            document.getElementById('msg-box').innerText = TEXT_DATA ? TEXT_DATA.gameMsg.chooseAction : "";
+            this.render(); this.showUnrevealed();
+        },
+
+        humanFold() { this.aiProcessFold(); this.fold('human', 1); this.executeShowdown(true); },
+        fold(p, score) { 
+            if (!this.isFolded[p]) { 
+                this.isFolded[p] = true; this.totalScores[p] += score; this.roundLogs[p][this.round-1] = score; 
+                const ev = this.evaluate(this.hands[p]); document.getElementById('fold-rank-'+p).innerText = `(${ev.name})`; 
+                const resEl = document.getElementById('res-'+p); resEl.className = 'p-result txt-fold'; resEl.innerText = "FOLD (+1)";
+            } 
+        },
+
+        showUnrevealed() {
+            const el = document.getElementById('remaining-cards'); 
+            if (!el) return;
+            el.innerHTML = "";
+            if (this.phase === 'reveal' || this.phase === 'idle') { 
+                for (let i = 0; i < 4; i++) { const div = document.createElement('div'); div.className = "mini-card locked"; el.appendChild(div); } 
+                return; 
+            }
+            let unrevealed = []; 
+            if (this.phase === 'result') { unrevealed = [...this.deckLeft]; } 
+            else { 
+                unrevealed = [...this.deckLeft]; 
+                this.players.slice(0, 3).forEach(p => { 
+                    this.hands[p].forEach((c, i) => { if(!this.revealedIdx[p].includes(i)) unrevealed.push(c); }); 
+                }); 
+            }
+            unrevealed.sort((a, b) => this.cardCmp(a, b)).forEach(c => {
+                const div = document.createElement('div'); 
+                div.className = `mini-card ${c.is7?'special':(c.s==='♥'||c.s==='♦'?'red':'black')}`;
+                div.innerHTML = `<div class="suit">${c.s==='N'?'★':c.s}</div><div class="val">${c.v}</div>`; 
+                el.appendChild(div);
+            });
+        },
+
+        executeShowdown(isHumanFolded = false) {
+            this.phase = 'result'; if (!isHumanFolded) this.aiProcessFold(); 
+            document.getElementById('btn-fold').disabled = true; document.getElementById('btn-showdown').disabled = true;
+            const activePlayers = this.players.filter(p => !this.isFolded[p]);
+            if (activePlayers.length > 0) {
+                const results = {}; this.players.forEach(p => results[p] = this.evaluate(this.hands[p]));
+                const winners = this.judge(results, activePlayers);
+                this.players.forEach(p => { if(!this.isFolded[p]) { const resEl = document.getElementById('res-'+p); resEl.innerText = results[p].name; resEl.className = winners.includes(p) ? "p-result txt-win" : "p-result txt-lose"; } });
+                winners.forEach(w => { let s = activePlayers.length + 2 + (results[w].rank === 10 ? 1 : 0); this.totalScores[w] += s; this.roundLogs[w][this.round-1] = s; });
+                activePlayers.forEach(p => { if(!winners.includes(p)) this.roundLogs[p][this.round-1] = 0; });
+            }
+            this.render(); this.updateUI(); this.showUnrevealed();
+            if (this.round >= 7) setTimeout(() => this.showFinalResult(), 2000); 
+            else { this.round++; document.getElementById('btn-deal').disabled = false; }
+        },
+
+        showFinalResult() {
+            document.getElementById('game-over-overlay').style.display = 'flex';
+        },
+
+        evaluate(cards) {
+            let v = {}, has7 = false; let sorted = [...cards].sort((a, b) => this.cardCmp(a, b)); 
+            cards.forEach(c => { v[c.v] = (v[c.v] || 0) + 1; if (c.is7) has7 = true; });
+            let counts = Object.entries(v).sort((a,b) => b[1] - a[1] || VAL_ORDER[b[0]] - VAL_ORDER[a[0]]);
+            let res = { rank: 0, name: "HIGH CARD", score_arr: sorted.map(c => VAL_ORDER[c.v]), is7: has7, cards: sorted };
+            if (counts[0][1] === 4) res = { rank: 6, name: "FOUR CARD", score_arr: [VAL_ORDER[counts[0][0]]], is7: has7, cards: sorted };
+            else if (Object.keys(v).length === 5 && cards.length === 5 && (VAL_ORDER[sorted[0].v] - VAL_ORDER[sorted[4].v] === 4) && !has7) res = { rank: 4, name: "STRAIGHT", score_arr: [VAL_ORDER[sorted[0].v]], is7: has7, cards: sorted };
+            else if (counts[0][1] === 3 && counts[1] && counts[1][1] === 2) res = { rank: 3, name: "FULL HOUSE", score_arr: [VAL_ORDER[counts[0][0]]], is7: has7, cards: sorted };
+            else if (counts[0][1] === 3) res = { rank: 2, name: "TRIPLE", score_arr: [VAL_ORDER[counts[0][0]]], is7: has7, cards: sorted };
+            else if (counts[0][1] === 2 && counts[1] && counts[1][1] === 2) res = { rank: 1, name: "TWO PAIR", score_arr: [VAL_ORDER[counts[0][0]], VAL_ORDER[counts[1][0]]], is7: has7, cards: sorted };
+            else if (counts[0][1] === 2) res = { rank: 0.5, name: "ONE PAIR", score_arr: [VAL_ORDER[counts[0][0]]], is7: has7, cards: sorted };
+            if (res.rank === 0 && has7) return { rank: 10, name: "7-HIGH", score_arr: sorted.map(c => VAL_ORDER[c.v]), is7: true, cards: sorted };
+            return res;
+        },
+
+        judge(res, activeKeys) { 
+            const has7Hi = activeKeys.some(k => res[k].rank === 10);
+            const hasOnePair = activeKeys.some(k => res[k].rank === 0.5);
+            if (has7Hi && hasOnePair) {
+                const onePairKeys = activeKeys.filter(k => res[k].rank === 0.5);
+                let winner = onePairKeys[0];
+                for (let i = 1; i < onePairKeys.length; i++) { if (this.compareNormal(res[onePairKeys[i]], res[winner]) > 0) winner = onePairKeys[i]; }
+                return onePairKeys.filter(k => this.compareNormal(res[k], res[winner]) === 0);
+            }
+            const winners = []; 
+            activeKeys.forEach(p => { 
+                let win = true; 
+                activeKeys.forEach(o => { if (p !== o && this.compare(res[p], res[o], activeKeys.map(k => res[k])) < 0) win = false; }); 
+                if (win) winners.push(p); 
+            }); 
+            return winners; 
+        },
+
+        compare(r1, r2, allResults) {
+            const has7HiOnField = allResults.some(r => r.rank === 10);
+            if (has7HiOnField) {
+                if (r1.rank === 10) {
+                    if (r2.rank === 0.5) return -1;
+                    if (r2.rank === 10) return 0;
+                    return 1;
+                }
+                if (r1.rank === 0.5) return 1;
+                if (r1.rank >= 1 && r1.rank <= 6) {
+                    if (r2.rank === 10) return -1;
+                    return this.compareNormal(r1, r2);
+                }
+            }
+            return this.compareNormal(r1, r2);
+        },
+
+        compareNormal(r1, r2) { 
+            if (r1.rank > r2.rank) return 1; 
+            if (r1.rank < r2.rank) return -1; 
+            for (let i = 0; i < r1.score_arr.length; i++) { 
+                if (r1.score_arr[i] > r2.score_arr[i]) return 1; 
+                if (r1.score_arr[i] < r2.score_arr[i]) return -1; 
+            } 
+            const s1 = SUIT_ORDER[r1.cards[0].s], s2 = SUIT_ORDER[r2.cards[0].s];
+            if (s1 > s2) return 1; if (s1 < s2) return -1;
+            return 0; 
+        },
+        
+        updateUI() {
+            document.getElementById('round-info').innerText = `ROUND ${this.round} / 7`;
+            const container = document.getElementById('side-score');
+            const maxScore = Math.max(...Object.values(this.totalScores));
+            container.innerHTML = this.players.map(p => {
+                const logs = this.roundLogs[p].map(l => `<td>${l}</td>`).join("");
+                const myClass = (p === 'human') ? 'my-score' : '';
+                const scoreClass = (this.totalScores[p] === maxScore && maxScore > 0) ? 'total-winner' : 'total-normal';
+                return `<div class="score-player-unit ${myClass}"><div class="p-top-info"><span class="p-name-label">${p === 'human' ? 'YOU' : 'Bot ' + p.slice(-1)}</span><span class="p-total-label ${scoreClass}">${this.totalScores[p]}</span></div><table class="p-mini-table"><tr><th>R1</th><th>R2</th><th>R3</th><th>R4</th><th>R5</th><th>R6</th><th>R7</th></tr><tr>${logs}</tr></table></div>`;
+            }).join("");
+        },
+
+        clearResults() { this.players.forEach(p => document.getElementById('res-'+p).innerText = ""); },
+        cardCmp(a, b) { if (VAL_ORDER[a.v] !== VAL_ORDER[b.v]) return VAL_ORDER[b.v] - VAL_ORDER[a.v]; return SUIT_ORDER[b.s] - SUIT_ORDER[a.s]; },
+        
+        toggleCardSelection(idx) {
+            const clickSfx = document.getElementById('sfx-click'); clickSfx.volume = this.sfxVol; clickSfx.play().catch(e => {});
+            const sIdx = this.selected.indexOf(idx); if (sIdx > -1) this.selected.splice(sIdx, 1); else if (this.selected.length < 4) this.selected.push(idx);
+            document.getElementById('btn-reveal').disabled = (this.selected.length !== 4);
+            this.render();
+        },
+
+        render(withAnim = false) {
+            this.players.forEach(pKey => {
+                const isAI = pKey.startsWith('ai'); const el = document.getElementById('cards-' + pKey); el.innerHTML = "";
+                let indices = [0,1,2,3,4];
+                if (this.phase !== 'reveal') {
+                    indices.sort((a, b) => {
+                        const aRev = this.revealedIdx[pKey].includes(a);
+                        const bRev = this.revealedIdx[pKey].includes(b);
+                        if (aRev !== bRev) return bRev - aRev;
+                        return this.cardCmp(this.hands[pKey][a], this.hands[pKey][b]);
+                    });
+                }
+                indices.forEach((origIdx, vIdx) => {
+                    const c = this.hands[pKey][origIdx]; 
+                    const div = document.createElement('div'); 
+                    div.className = `card ${(c.s==='♥'||c.s==='♦'?'red':'black')}`;
+                    if (this.isFolded[pKey]) div.classList.add('folded-filter');
+                    if (withAnim && pKey === 'human') { div.classList.add('human-deal-anim'); div.style.animationDelay = `${vIdx * 0.52}s`; }
+                    let isVisible = !isAI || (this.phase === 'fold' && this.revealedIdx[pKey].includes(origIdx)) || this.phase === 'result';
+                    if (!isVisible) div.classList.add('hidden'); 
+                    else { 
+                        if (c.is7) div.classList.add('special'); 
+                        div.innerHTML = `<div class="suit">${c.s==='N'?'★':c.s}</div><div class="val">${c.v}</div>`; 
+                    }
+                    if (this.phase !== 'reveal') {
+                        if (this.revealedIdx[pKey].includes(origIdx)) div.classList.add('revealed-border');
+                        if (vIdx === 4) div.classList.add('push-right');
+                    }
+                    if (!isAI && this.phase === 'reveal') {
+                        if (this.selected.includes(origIdx)) div.classList.add('selected');
+                        div.onclick = () => this.toggleCardSelection(origIdx);
+                    }
+                    el.appendChild(div);
+                });
+            });
         }
     };
-
-    setInterval(() => {
-        document.querySelectorAll('.cand-item').forEach(item => {
-            const moveX = (Math.random()-0.5)*1.5; const moveY = (Math.random()-0.5)*1.5;
-            item.style.transform = `translate(${moveX}vh, ${moveY}vh)`;
-        });
-        const turnCounter = document.getElementById('turn-counter');
-        if(turnCounter) {
-            if (_0xturnCount > 0) {
-                const intensity = 15; 
-                const tMoveX = (Math.random()-0.5) * intensity;
-                const tMoveY = (Math.random()-0.5) * intensity;
-                turnCounter.style.transform = `translate(${tMoveX}px, ${tMoveY}px)`;
-            } else { turnCounter.style.transform = `translate(0px, 0px)`; }
-        }
-    }, 2000);
 </script>
 </body>
 </html>
