@@ -13,7 +13,7 @@
       "content": "DEAL 버튼을 누르면 5장의 카드를 받습니다. <br>확인을 누르고 DEAL을 직접 눌러보세요." 
     },
     "step5": { 
-      "title": "카드 확인", 
+      "title": "REVEAL 페이즈", 
       "content": "5장의 카드 중 <span class='gold-text'>상대에게 보여줄 4장</span>을 선택하는 페이즈입니다. <br>숨겨놓을 1장에 자신이 어떤 생각을 하는지 들키지 않도록 고르세요!" 
     },
     "step6": { 
@@ -21,16 +21,16 @@
       "content": "신중하게 고민해서 공개할 4장을 선택하고 REVEAL을 누르세요." 
     },
     "step8": { 
-      "title": "승부 선택", 
+      "title": "SHOWDOWN 페이즈", 
       "content": "다른 사람들의 카드를 보고 <span class='gold-text'>승부에 참여하려면 SHOWDOWN</span>, <br>나의 패로는 승부에서 <span class='gold-text'>이기기 어렵다고 생각되면 FOLD</span>를 누르세요." 
     },
     "step9": { 
       "title": "SHOWDOWN 페이즈", 
-      "content": "라운드에서 쇼다운하여 승리하면 <span class='gold-text'>쇼다운에 참여한 인원+2점</span>을 획득합니다.<br> 폴드를 하면 결과에 관계없이 <span class='gold-text'>+1점</span>을 얻습니다. <br><span class='gold-text'>공개되지 않은 카드의 목록은 우측</span>에 있습니다." 
+      "content": "쇼다운에서 승리하면 <span class='gold-text'>쇼다운에 참여한 인원 수+2점</span>을,<br> 폴드를 하면 결과에 관계없이 <span class='gold-text'>1점</span>을 얻습니다. <br><span class='gold-text'>공개되지 않은 카드의 목록은 우측</span>에 있습니다." 
     },
     "step11": { 
-      "title": "Seven-Hi 규칙", 
-      "content": "Seven-Hi는 원페어를 제외한 모든 상위 패를 이길 수 있는 강력한 수단입니다.<br>누군가 Seven-Hi를 들고 있지는 않을지 꼼꼼하게 따져보세요<br>상대의 패를 고려하여 가장 합리적인 선택을 하세요." 
+      "title": "특수족보 Seven-Hi 규칙", 
+      "content": "<span class='gold-text'>Seven-Hi는 원페어를 제외한 모든 패를 이길 수 있는</span> 강력한 수단입니다.<br>누군가 Seven-Hi를 들고 있지는 않을지 꼼꼼하게 따져보세요<br>상대의 패를 고려하여 가장 합리적인 선택을 하세요." 
     },
     "step12": { 
       "title": "완료", 
