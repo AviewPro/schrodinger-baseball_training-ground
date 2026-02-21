@@ -85,13 +85,11 @@
         .p-mini-table td { color: #ffd700; border: 0.1vh solid #555; height: 3vh; font-weight: bold; font-size: 1.8vh; }
 
         .game-board {
-            width: fit-content;
-            min-width: calc(fit-content * 1.05); 
+            width: fit-content; min-width: calc(fit-content * 1.05); 
             max-width: 90vw; background: url('tablecloth.png'); background-size: cover;
             padding: 2vh 3vh; border-radius: 3vh; border: 0.5vh solid #5d4037; position: relative;
             height: 95vh; display: flex; flex-direction: column; justify-content: flex-start;
-            box-shadow: inset 0 0 5vh #000; box-sizing: border-box;
-            align-items: center; 
+            box-shadow: inset 0 0 5vh #000; box-sizing: border-box; align-items: center; 
         }
 
         .static-gold-box { 
@@ -180,9 +178,25 @@
         }
         .tutorial-msg-box {
             background: #1a1a1a; border: 0.3vh solid #666; padding: 2vh 3vh; 
-            border-radius: 2vh; width: 70vh; text-align: center; 
+            border-radius: 2vh; width: 85vh; text-align: center; 
             box-shadow: 0 0 2vh rgba(0,0,0,0.8); position: relative; pointer-events: auto;
         }
+        
+        /* 튜토리얼 테이블 스타일 수정 */
+        .tut-table {
+            width: 90%; margin: 2vh auto; border-collapse: collapse; color: #eee; font-size: 1.6vh;
+        }
+        .tut-table th, .tut-table td {
+            border: 0.1vh solid #444; padding: 0.8vh; text-align: center;
+        }
+        .tut-table th { background: #333; color: #ffd700; }
+        .tut-row-highlight {
+            background: rgba(255, 215, 0, 0.2) !important;
+            color: #ffd700 !important;
+            font-weight: bold;
+            box-shadow: inset 0 0 1vh rgba(255, 215, 0, 0.3);
+        }
+
         .tutorial-highlight { outline: 0.5vh solid #ff4b2b !important; box-shadow: 0 0 5vh #ff4b2b !important; opacity: 1 !important; pointer-events: auto !important; z-index: 6000 !important; position: relative; }
         .tutorial-active-lock { pointer-events: none !important; }
         .tutorial-active-lock #tutorial-overlay, .tutorial-active-lock #tutorial-overlay *, .tutorial-active-lock .tutorial-highlight { pointer-events: auto !important; }
