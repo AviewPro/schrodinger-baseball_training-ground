@@ -73,7 +73,7 @@
                 this.players.forEach(po=>{if(po===p)return;this.hands[po].forEach((c,idx)=>{if(!this.revIdx[po].includes(idx))pl.push(c);});});
                 let sc=[];const pt=(a,m=[])=>{if(sc.length>=24)return;if(a.length===0)sc.push(m);else{for(let i=0;i<a.length;i++){let c=a.slice(),n=c.splice(i,1);pt(c,m.concat(n));if(sc.length>=24)return;}}};pt(pl);
                 if(mE.rank===10){const afs=this.players.some(po=>{if(po===p)return false;const vc=this.revIdx[po].map(idx=>this.hands[po][idx]);return this.ev(vc).rank>=1;});if(afs)sY=true;if(!sY){let ssc=0;sc.forEach(s=>{let si=0,hss=false;this.players.forEach(po=>{if(po===p)return;const sm=this.revIdx[po].map(idx=>this.hands[po][idx]);sm.push(s[si++]);if(this.ev(sm).rank>=1)hss=true;});if(hss)ssc++;});if(ssc>=18)sY=true;}if(!sY&&Math.random()<0.5)sY=true;}
-                else{let wc=0;sc.forEach(s=>{let si=0;const be=[];this.players.forEach(pc=>{if(pc===p)be.push({p:pc,ev:mE});else{const fh=this.revIdx[pc].map(idx=>this.hands[pc][idx]);fh.push(s[si++]);be.push({p:pc,ev:this.ev(fh)});}});const ws=this.jdR(be,be.map(b=>b.p));if(ws.includes(p))wc++;});if(wc>=9)sY=true;}
+                else{let wc=0;sc.forEach(s=>{let si=0;const be=[];this.players.forEach(pc=>{if(pc===p)be.push({p:pc,ev:mE});else{const fh=this.revIdx[pc].map(idx=>this.hands[pc][idx]);fh.push(s[si++]);be.push({p:pc,ev:this.ev(fh)});}});const ws=this.jdR(be,be.map(b=>b.p));if(ws.includes(p))wc++;});if(wc>=7)sY=true;}
                 if(!sY)this.f(p,1);
             });
         },
